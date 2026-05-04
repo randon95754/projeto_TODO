@@ -1,0 +1,71 @@
+/* Container principal da lista, centralizando e definindo uma largura máxima */
+.container {
+  max-width: 500px; /* Impede que a lista fique larga demais em telas grandes */
+  margin: 50px auto; /* Centraliza o bloco na página */
+  padding: 20px; /* Espaço interno para não encostar nas bordas */
+  font-family: 'Segoe UI', Tahoma, sans-serif; /* Define uma fonte moderna e limpa */
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1); /* Adiciona uma sombra suave para dar profundidade */
+  border-radius: 8px; /* Arredonda os cantos do card */
+  background-color: #ffffff; /* Fundo branco para contraste */
+}
+
+/* Estilo do cabeçalho */
+h2 {
+  color: #333; /* Cor cinza escuro para o título */
+  text-align: center;
+}
+
+/* Grupo de entrada (input + botão) */
+.input-group {
+  display: flex; /* Alinha o input e botão lado a lado */
+  gap: 10px; /* Espaço entre os elementos */
+  margin-bottom: 20px;
+}
+
+/* Estilização do campo de texto */
+input {
+  flex: 1; /* O input ocupa todo o espaço disponível */
+  padding: 10px;
+  border: 1px solid #faf9f9;
+  border-radius: 4px;
+}
+
+/* Botão de Adicionar */
+button.add-btn {
+  padding: 10px 20px;
+  background-color: #28a745; /* Verde para indicar ação positiva */
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+/* Lista sem marcadores */
+ul {
+  list-style: none; /* Remove as bolinhas da lista */
+  padding: 0;
+}
+
+/* Item da lista */
+li {
+  display: flex;
+  justify-content: space-between; /* Empurra o texto para esquerda e botão para direita */
+  align-items: center; /* Alinha verticalmente no centro */
+  padding: 10px;
+  border-bottom: 1px solid #ffb9b9; /* Linha divisória sutil */
+}
+
+/* Botão de Excluir */
+button.delete-btn {
+  background-color: #dc3545; /* Vermelho para indicar exclusão */
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 5px 10px;
+  cursor: pointer;
+}
+
+/* Efeito de passar o mouse (Hover) */
+button:hover {
+  opacity: 0.8; /* Diminui levemente a opacidade ao passar o mouse */
+}
