@@ -1,1 +1,287 @@
-/* You can add global styles to this file, and also import other style files */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
+
+/* =========================
+   🎯 DESIGN SYSTEM (LIGHT)
+========================= */
+:root {
+  --bg: #f9fafb;
+  --card: #ffffff;
+  --text: #0f172a;        /* texto base */
+  --text-strong: #020617; /* H2 / destaque */
+  --text-soft: #1e293b;   /* H3 / títulos secundários */
+  --muted: #64748b;
+  --border: #e2e8f0;
+  --primary: #3b82f6;
+  --column: rgba(148, 163, 184, 0.05);
+
+  --shadow: rgba(0, 0, 0, 0.08);
+}
+
+/* =========================
+   🌙 DARK MODE (NOTION STYLE)
+========================= */
+body.dark {
+  --bg: #0b1220;
+  --card: #111827;
+  --text: #cbd5e1;        /* texto normal */
+  --text-strong: #e5e7eb; /* H2 (mais branco) */
+  --text-soft: #020617;   /* H3 */
+  --muted: #94a3b8;
+  --border: #1f2937;
+  --primary: #60a5fa;
+  --column: #0f172a;
+
+  --shadow: rgba(0, 0, 0, 0.35);
+}
+
+/* =========================
+   BASE GLOBAL
+========================= */
+body {
+  margin: 0;
+  font-family: 'Inter', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  transition: background 0.35s ease, color 0.35s ease;
+}
+
+/* =========================
+   ANIMAÇÃO GLOBAL DO THEME
+========================= */
+body.theme-transition * {
+  transition: background 0.35s ease,
+              color 0.35s ease,
+              border-color 0.35s ease,
+              box-shadow 0.35s ease;
+}
+
+/* =========================
+   SCROLL PERSONALIZADO
+========================= */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 10px;
+}
+
+/* =========================
+   CONTAINER
+========================= */
+.container {
+  max-width: 1000px;
+  margin: 40px auto;
+  padding: 20px;
+}
+
+/* =========================
+   HEADER
+========================= */
+.header {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.header h2 {
+  margin: 0;
+  font-size: 26px;
+  font-weight: 600;
+}
+
+.header p {
+  color: var(--muted);
+}
+
+/* =========================
+   FORM
+========================= */
+.task-form {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 25px;
+}
+
+.task-form input {
+  flex: 1;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--card);
+  color: var(--text);
+  transition: 0.2s ease;
+}
+
+.task-form input:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(59,130,246,0.15);
+}
+
+.task-form button {
+  background: var(--primary);
+  color: white;
+  border: none;
+  padding: 12px 14px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: 0.2s ease;
+  font-weight: 500;
+}
+
+.task-form button:hover {
+  transform: translateY(-2px);
+  opacity: 0.9;
+}
+
+/* =========================
+   BOARD (KANBAN)
+========================= */
+.board {
+  display: flex;
+  gap: 20px;
+}
+
+/* =========================
+   COLUMN (NOTION CARDS AREA)
+========================= */
+.column {
+  flex: 1;
+  background: var(--column);
+  padding: 15px;
+  border-radius: 14px;
+  min-height: 400px;
+  border: 1px solid var(--border);
+  transition: background 0.3s ease;
+}
+
+.column h3 {
+  margin-bottom: 15px;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+/* =========================
+   TASK CARD (NOTION + TRELLO MIX)
+========================= */
+.task-card {
+  background: var(--card);
+  padding: 12px;
+  border-radius: 12px;
+  margin-bottom: 10px;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  border: 1px solid var(--border);
+  cursor: grab;
+
+  transition: all 0.2s ease;
+  animation: fadeInUp 0.25s ease;
+}
+
+.task-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 25px var(--shadow);
+}
+
+/* =========================
+   DRAG & DROP (ANGULAR CDK)
+========================= */
+.cdk-drag-preview {
+  box-shadow: 0 20px 40px var(--shadow);
+  transform: rotate(2deg);
+}
+
+.cdk-drag-placeholder {
+  opacity: 0.25;
+}
+
+/* =========================
+   DONE STATE (NOTION STYLE)
+========================= */
+.task-card.done {
+  opacity: 0.6;
+}
+
+.task-card.done span {
+  color: var(--muted);
+  text-decoration: line-through;
+}
+
+/* =========================
+   CONTENT
+========================= */
+.task-content {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+}
+
+.task-content span {
+  cursor: pointer;
+}
+
+/* =========================
+   ACTIONS
+========================= */
+.actions {
+  display: flex;
+  gap: 8px;
+}
+
+.actions button {
+  border: none;
+  background: var(--border);
+  padding: 6px 8px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.15s ease;
+  color: var(--text);
+}
+
+.actions button:hover {
+  transform: scale(1.05);
+  opacity: 0.85;
+}
+
+/* =========================
+   THEME BUTTON
+========================= */
+.theme-btn {
+  position: fixed;
+  right: 20px;
+  top: 20px;
+
+  background: var(--card);
+  color: var(--text);
+  border: 1px solid var(--border);
+
+  padding: 8px 12px;
+  border-radius: 10px;
+
+  cursor: pointer;
+  transition: 0.3s ease;
+  z-index: 1000;
+}
+
+.theme-btn:hover {
+  transform: translateY(-2px);
+}
+
+/* =========================
+   ANIMATION ENTRADA
+========================= */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

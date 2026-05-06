@@ -1,5 +1,5 @@
 package com.example.todo.model;
-
+import java.time.LocalDateTime;
 import jakarta.persistence.*;
 
 @Entity
@@ -12,6 +12,15 @@ public class Task {
     private String title;
     private boolean completed;
 
+    private LocalDateTime cratedAt;
+
+    @PrePersist
+    public void prePersist(){
+        if(this.cratedAt == null){
+            this.cratedAt = LocalDataTime.now();
+        }
+    }
+    
     // Construtor vazio obrigatório para o JPA
     public Task() {
     }
@@ -21,7 +30,13 @@ public class Task {
         this.title = title;
         this.completed = completed;
     }
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
 
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
     // Getters e Setters
 
     public Long getId() {

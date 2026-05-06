@@ -1,28 +1,94 @@
 <div class="container">
-  <h2>Lista de Tarefas</h2>
+  <button class="theme-btn" (click)="toggleTheme()">
+    🌙 / ☀️ Tema
+  </button>
 
-  <form (ngSubmit)="addTask()" class="input-group">
+  <div class="header">
+    <h2>Registro de Tarefas</h2>
+    <p>Organize suas tarefas de forma ágil</p>
+  </div>
+
+  <form (ngSubmit)="addTask()" class="task-form">
     <input
       [(ngModel)]="newTask"
       name="newTask"
-      placeholder="Nova tarefa"
+      placeholder="Nova tarefa..."
+      required
     />
-
-    <button type="submit" class="add-btn">
-      Adicionar
-    </button>
+    <button type="submit">➕ Adicionar</button>
   </form>
 
-  <ul>
-    <li *ngFor="let task of tasks">
-      {{ task.title }}
+  <div class="board" cdkDropListGroup>
 
-      <button
-        type="button"
-        class="delete-btn"
-        (click)="deleteTask(task.id!)">
-        Excluir
-      </button>
-    </li>
-  </ul>
+    <div class="column">
+      <h3>🟡 Pendentes</h3>
+      <div 
+        class="task-list"
+        cdkDropList
+        [cdkDropListData]="pendingTasks"
+        (cdkDropListDropped)="drop($event)">
+        
+        <div class="task-card" *ngFor="let task of pendingTasks" cdkDrag>
+          <div class="task-content">
+            <input 
+              type="checkbox" 
+              [checked]="task.completed" 
+              (change)="toggleTask(task)" 
+            />
+            
+            <input 
+              *ngIf="task.editing" 
+              [(ngModel)]="task.title" 
+              (blur)="task.editing = false"
+              (keyup.enter)="task.editing = false"
+              autoFocus
+            />
+            
+            <div *ngIf="!task.editing">
+              <span (click)="task.editing = true">{{ task.title }}</span>
+              <small class="date">{{ task.createdAt | date:'dd/MM/yyyy HH:mm' }}</small>
+            </div>
+          </div>
+
+          <div class="actions">
+            <button (click)="task.editing = true">✏️</button>
+            <button (click)="deleteTask(task.id!)">🗑️</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="column">
+      <h3>🟢 Concluídas</h3>
+      <div 
+        class="task-list"
+        cdkDropList
+        [cdkDropListData]="doneTasks"
+        (cdkDropListDropped)="drop($event)">
+
+        <div class="task-card done" *ngFor="let task of doneTasks" cdkDrag>
+          <div class="task-content">
+            <input 
+              type="checkbox" 
+              [checked]="task.completed" 
+              (change)="toggleTask(task)" 
+            />
+            <span class="completed-text">{{ task.title }}</span>
+            
+          </div>
+          <div class="task-text">
+  <span (click)="task.editing = true">{{ task.title }}</span>
+
+  <small class="date" *ngIf="task.createdAt">
+    {{ task.createdAt | date:'dd/MM/yyyy HH:mm' }}
+  </small>
+</div>
+          <div class="actions">
+            <button (click)="deleteTask(task.id!)">🗑️</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
 </div>
