@@ -12,12 +12,12 @@ public class Task {
     private String title;
     private boolean completed;
 
-    private LocalDateTime cratedAt;
+    private LocalDateTime createdAt;
 
     @PrePersist
     public void prePersist(){
-        if(this.cratedAt == null){
-            this.cratedAt = LocalDataTime.now();
+        if(this.createdAt == null){
+            this.createdAt = LocalDateTime.now();
         }
     }
     

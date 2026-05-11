@@ -4,6 +4,10 @@ import { Task } from '../../models/task';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 
+import { registerLocaleData } from '@angular/common';
+import localePt from '@angular/common/locales/pt';
+registerLocaleData(localePt);
+
 import {
   DragDropModule,
   CdkDragDrop,
@@ -32,6 +36,8 @@ export class TaskComponent implements OnInit {
   // 🌙 DARK MODE STATE
   darkMode: boolean = false;
 
+
+  
   constructor(
     private service: TaskService,
     private ngZone: NgZone
@@ -127,9 +133,6 @@ export class TaskComponent implements OnInit {
   });
 }
 
-  /* ==============================
-     🔄 TOGGLE TASK
-  ============================== */
 
   toggleTask(task: Task) {
     task.completed = !task.completed;
@@ -137,9 +140,6 @@ export class TaskComponent implements OnInit {
     this.refreshColumns();
   }
 
-  /* ==============================
-     🔁 REFRESH KANBAN
-  ============================== */
 
   private refreshColumns(): void {
     const allTasks = [...this.pendingTasks, ...this.doneTasks];
@@ -189,4 +189,6 @@ export class TaskComponent implements OnInit {
 
   this.refreshColumns();
 }
+
+
 }
