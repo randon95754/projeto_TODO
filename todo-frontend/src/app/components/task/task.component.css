@@ -2,7 +2,7 @@
    ESTRUTURA PRINCIPAL
    ========================================= */
 .container {
-  max-width: 1000px;
+  max-width: 1100px;
   margin: 0 auto;
   padding: 60px 20px;
   background: transparent;
@@ -28,17 +28,27 @@
 }
 
 /* =========================================
-   FORMULÁRIO DE ENTRADA
+   NOVO LAYOUT: FORMULÁRIO EM BLOCOS LADO A LADO
    ========================================= */
-.input-group {
+.task-form {
   display: flex;
+  align-items: flex-start;
+  gap: 20px;
+  margin-bottom: 40px;
+  flex-wrap: wrap;
+}
+
+.input-group {
+  flex: 2;
+  display: flex;
+  align-items: center;
   background: var(--card);
-  padding: 10px;
+  padding: 8px 12px;
   border-radius: 20px;
   box-shadow: var(--shadow);
   border: 1px solid var(--border);
-  margin-bottom: 40px;
   transition: all 0.3s ease;
+  min-width: 300px;
 }
 
 .input-group:focus-within {
@@ -47,14 +57,130 @@
   box-shadow: 0 0 20px rgba(99, 102, 241, 0.2);
 }
 
-.input-group input {
+.input-group input[type="text"] {
   flex: 1;
   border: none;
   background: transparent;
-  padding: 12px 18px;
+  padding: 12px;
   font-size: 1rem;
   color: var(--text-strong);
   outline: none;
+}
+
+.deadline-premium-block {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 280px;
+}
+
+.deadline-toggle-container {
+  display: flex;
+  align-items: center;
+  background: var(--card);
+  padding: 12px 16px;
+  border-radius: 18px;
+  border: 1px solid var(--border);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  user-select: none;
+}
+
+.deadline-toggle-container:hover {
+  border-color: var(--primary);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.deadline-toggle-container input {
+  display: none;
+}
+
+.custom-switch {
+  width: 44px;
+  height: 22px;
+  background: #2d2d3d; 
+  border-radius: 20px;
+  position: relative;
+  margin-right: 12px;
+  transition: all 0.3s;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.custom-switch::before {
+  content: "";
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  background: #ffffff;
+  border-radius: 50%;
+  top: 2px;
+  left: 3px;
+  transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 0 8px rgba(0,0,0,0.5);
+}
+
+.deadline-toggle-container input:checked + .custom-switch {
+  background: var(--primary);
+  border-color: var(--primary);
+  box-shadow: 0 0 15px rgba(99, 102, 241, 0.4);
+}
+
+.deadline-toggle-container input:checked + .custom-switch::before {
+  transform: translateX(20px);
+  background: #ffffff;
+}
+
+.switch-label-text {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-soft);
+}
+
+.deadline-toggle-container input:checked ~ .switch-label-text {
+  color: var(--text-strong);
+}
+
+.deadline-inline-inputs {
+  display: flex;
+  gap: 10px;
+  animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.field-box {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.field-box label {
+  font-size: 9px;
+  font-weight: 800;
+  color: var(--text-soft);
+  text-transform: uppercase;
+  margin-bottom: 4px;
+  letter-spacing: 0.05em;
+}
+
+.field-box input {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 8px 12px;
+  color: var(--text-strong);
+  font-size: 0.85rem;
+  outline: none;
+  transition: all 0.2s;
+}
+
+.field-box input:focus {
+  border-color: var(--primary);
+  background: rgba(255, 255, 255, 0.05);
 }
 
 .add-btn {
@@ -62,30 +188,29 @@
   align-items: center;
   justify-content: center;
   background: var(--primary);
-  border-radius: 12px;
+  border-radius: 14px;
   width: 44px;
   height: 44px;
   color: white;
   font-size: 24px;
   border: none;
   cursor: pointer;
-  padding: 0;
-  line-height: 1;
+  flex-shrink: 0;
   transition: all 0.2s ease;
 }
 
 .add-btn:hover {
   background: var(--primary-hover);
   box-shadow: 0 0 15px var(--primary);
-  transform: rotate(90deg);
+  transform: scale(1.05);
 }
 
 /* =========================================
-   KANBAN BOARD & COLUNAS
+   KANBAN BOARD & COLUNAS (3 COLUNAS)
    ========================================= */
 .board {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
   gap: 30px;
 }
 
@@ -95,7 +220,6 @@
   border-radius: 24px;
   padding: 24px;
   min-height: 500px;
-  transition: background 0.3s ease;
 }
 
 .column-header {
@@ -109,30 +233,33 @@
   font-size: 13px;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.1em;
   color: var(--text-soft);
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .dot { width: 8px; height: 8px; border-radius: 50%; }
 .pending .dot { background: var(--accent); }
 .done .dot { background: var(--secondary); }
+.expired-header .dot { background: #ef4444; }
 
 .count-badge {
   background: var(--card);
   padding: 2px 10px;
   border-radius: 20px;
   font-size: 0.75rem;
-  font-weight: 700;
   color: var(--text-soft);
   border: 1px solid var(--border);
 }
 
 /* =========================================
-   TASK CARDS (GERAL)
+   TASK CARDS
    ========================================= */
 .task-card {
+  position: relative;
   background: var(--card);
-  padding: 18px;
+  padding: 15px;
   border-radius: 18px;
   margin-bottom: 16px;
   display: flex;
@@ -145,9 +272,11 @@
 .task-card:hover {
   transform: scale(1.02) translateY(-5px);
   border-color: var(--primary);
-  box-shadow: var(--shadow);
 }
 
+/* =========================================
+   BOTÕES DE AÇÃO
+   ========================================= */
 .task-content {
   display: flex;
   align-items: center;
@@ -155,30 +284,17 @@
 }
 
 .task-info h3 {
-  font-size: 16px;
+  padding-right: 80px;
+  font-size: 15px;
   font-weight: 600;
   color: var(--text-strong);
 }
 
-.checkbox-container {
-  width: 22px;
-  height: 22px;
-  cursor: pointer;
-  transition: all 0.5s;
-}
-
-.checkbox-container.checked {
-  background: var(--secondary);
-  border-color: var(--secondary);
-}
-
-
-/* =========================================
-   BOTÕES DE AÇÃO (EDITAR E DELETAR)
-   ========================================= */
 .task-actions {
   display: flex;
   gap: 8px;
+  margin-top: 15px; /* Cria o espaço necessário abaixo da data */
+  align-self: flex-end;
 }
 
 .btn-icon {
@@ -187,51 +303,49 @@
   cursor: pointer;
   padding: 8px;
   border-radius: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.2s ease;
   color: var(--text-soft);
-  font-size: 1.1rem;
+  transition: all 0.2s;
 }
 
-/* Estilo específico: EDITAR */
-.btn-icon.edit:hover {
-  background: rgba(99, 102, 241, 0.1); /* Fundo indigo suave */
-  color: var(--primary); /* Ícone fica azul/indigo */
-}
-
-/* Estilo específico: DELETAR */
-.btn-icon.delete:hover {
-  background: rgba(239, 68, 68, 0.1); /* Fundo vermelho suave */
-  color: #ef4444; /* Ícone fica vermelho */
-}
+.btn-icon.edit:hover { background: rgba(99, 102, 241, 0.1); color: var(--primary); }
+.btn-icon.delete:hover { background: rgba(239, 68, 68, 0.1); color: #ef4444; }
 
 /* =========================================
-   ESTADO CONCLUÍDO (LIMPEZA NA COLUNA DIREITA)
+   ESTADO CONCLUÍDO E DATAS
    ========================================= */
-.task-done {
-  opacity: 0.7;
-  filter: grayscale(0.4);
+.task-done { opacity: 0.7; filter: grayscale(0.4); }
+.task-done h3 { text-decoration: line-through; }
+
+.task-dates {
+  display: flex;
+  gap: 12px;
+  margin-top: 8px;
+  font-size: 0.7rem;
+  flex-wrap: wrap;
 }
 
-.task-done h3 {
-  text-decoration: line-through;
-  color: var(--text-muted);
+.date-created { 
+  position: absolute;
+  top: 12px;    /* Distância do topo */
+  right: 15px;  /* Distância da direita */
+  margin: 0;    /* Remove margens que possam deslocar o elemento */
+  background: rgba(100, 116, 139, 0.1);
+  background: rgba(100, 116, 139, 0.1); 
+  color: #64748b; 
+  padding: 1px 10px; 
+  border-radius: 10px; 
+  z-index: 1;
 }
 
-.task-done .checkbox-container {
-  background: transparent !important;
+.date-due { 
+  background: rgba(245, 158, 11, 0.12); 
+  color: #f59e0b; 
+  padding: 4px 10px; 
+  border-radius: 20px; 
 }
-
-/* REGRA DE OURO: Esconde TUDO nas ações exceto o botão de delete */
-.task-done .task-actions .btn-icon:not(.delete) {
-  display: none !important;
-}
-
 
 /* =========================================
-   OUTROS (THEME BTN, ANIMATIONS, RESPONSIVIDADE)
+   TEMA E RESPONSIVIDADE
    ========================================= */
 .theme-btn {
   position: fixed;
@@ -248,22 +362,68 @@
   align-items: center;
   justify-content: center;
   font-size: 22px;
-  z-index: 9999;
   box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
-  transition: all 0.4s ease;
+  z-index: 100;
 }
 
-.theme-btn:hover { 
-  transform: translateY(-5px) rotate(-10deg);
-}
-
-@keyframes fadeInUp {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
+@media (max-width: 1100px) {
+  .board { grid-template-columns: repeat(2, 1fr); }
 }
 
 @media (max-width: 768px) {
   .board { grid-template-columns: 1fr; }
-  .header h1 { font-size: 2rem; }
+  .task-form { flex-direction: column; }
+  .input-group, .deadline-premium-block { width: 100%; }
 }
 
+/* =========================================
+   🎨 NOVOS ESTILOS PARA PRAZOS (APENAS ADIÇÕES)
+   ========================================= */
+
+/* Cores dinâmicas para o tempo restante */
+.time-left {
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+/* Azul - prazo normal (mais de 3 dias) */
+.time-left.time-normal {
+  background: rgba(99, 102, 241, 0.12);
+  color: #6366f1;
+}
+
+/* Amarelo - prazo próximo (3 dias ou menos) */
+.time-left.time-warning {
+  background: rgba(245, 158, 11, 0.15);
+  color: #f59e0b;
+  font-weight: 700;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+/* Vermelho - prazo expirado */
+.time-left.time-expired {
+  background: rgba(239, 68, 68, 0.15);
+  color: #ef4444;
+  font-weight: 700;
+  animation: shake 0.5s ease-in-out;
+}
+
+/* Animações */
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.85;
+    transform: scale(1.02);
+  }
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-3px); }
+  75% { transform: translateX(3px); }
+}

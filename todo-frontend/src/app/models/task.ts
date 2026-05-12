@@ -4,4 +4,6 @@ export interface Task {
   completed: boolean;
   createdAt?: Date;
   editing?: boolean;
+  dueDate?: Date | null;
+  hasDeadline?: boolean;
 }

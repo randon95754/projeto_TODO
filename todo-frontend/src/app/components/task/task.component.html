@@ -21,9 +21,33 @@
         <span>+</span>
       </button>
     </div>
+
+    <div class="deadline-premium-block">
+      <label class="deadline-toggle-container">
+        <input
+          type="checkbox"
+          [(ngModel)]="hasDeadline"
+          name="hasDeadline"
+        />
+        <div class="custom-switch"></div>
+        <span class="switch-label-text">Adicionar prazo</span>
+      </label>
+
+      <div class="deadline-inline-inputs" *ngIf="hasDeadline">
+        <div class="field-box">
+          <label>Data</label>
+          <input type="date" [(ngModel)]="dueDateValue" name="dueDate" />
+        </div>
+        <div class="field-box">
+          <label>Hora</label>
+          <input type="time" [(ngModel)]="dueTimeValue" name="dueTime" />
+        </div>
+      </div>
+    </div>
   </form>
 
   <div class="board" cdkDropListGroup>
+
     <section class="column">
       <div class="column-header pending">
         <h2><span class="dot"></span> Pendentes</h2>
@@ -44,8 +68,19 @@
 
             <div class="task-info">
               <input *ngIf="task.editing" class="edit-input" [(ngModel)]="task.title" (blur)="task.editing = false" (keyup.enter)="task.editing = false" autoFocus />
-              <h3 *ngIf="!task.editing" (dblclick)="task.editing = true">{{ task.title }}</h3>
-              <span class="task-date">{{ task.createdAt | date:'dd MMM, HH:mm' }}</span>
+              <h3 *ngIf="!task.editing" (dblclick)="task.editing = true">{{ task.title }} <span class="date-created">📅 {{ task.createdAt | date:'dd MMM, HH:mm' }}</span></h3>
+              
+              <div class="task-dates">
+                
+                <span *ngIf="task.hasDeadline && task.dueDate" class="date-due">⏰ {{ task.dueDate | date:'dd MMM, HH:mm' }}</span>
+                <span *ngIf="task.hasDeadline && task.dueDate" 
+                      class="time-left" 
+                      [class.time-normal]="getTimeRemaining(task).status === 'normal'"
+                      [class.time-warning]="getTimeRemaining(task).status === 'warning'"
+                      [class.time-expired]="getTimeRemaining(task).status === 'expired'">
+                  {{ getTimeRemaining(task).text }}
+                </span>
+              </div>
             </div>
           </div>
 
@@ -58,29 +93,33 @@
     </section>
 
     <section class="column">
-  <div class="column-header done">
-    <h2><span class="dot"></span> Concluídas</h2>
-    <span class="count-badge">{{ doneTasks.length }}</span>
-  </div>
-
-  <div class="task-list" cdkDropList [cdkDropListData]="doneTasks" (cdkDropListDropped)="drop($event)">
-    <div class="empty-state" *ngIf="doneTasks.length === 0">
-      <p>🚀 Conclua algo para ver aqui!</p>
-    </div>
-
-    <article class="task-card task-done" *ngFor="let task of doneTasks" cdkDrag>
-      <div class="task-content">
-        <label class="checkbox-container">
-          <input type="checkbox" checked (change)="toggleTask(task)" />
-          <span class="checkmark"></span>
-        </label>
-        <div class="task-info">
-          <h3>{{ task.title }}</h3>
-        </div>
+      <div class="column-header done">
+        <h2><span class="dot"></span> Concluídas</h2>
+        <span class="count-badge">{{ doneTasks.length }}</span>
       </div>
-      <button class="btn-icon delete" (click)="deleteTask(task.id!)">🗑️</button>
-    </article>
-  </div>
-</section>
+
+      <div class="task-list" cdkDropList [cdkDropListData]="doneTasks" (cdkDropListDropped)="drop($event)">
+        <div class="empty-state" *ngIf="doneTasks.length === 0">
+          <p>🚀 Conclua algo para ver aqui!</p>
+        </div>
+
+        <article class="task-card task-done" *ngFor="let task of doneTasks" cdkDrag>
+          <div class="task-content">
+            <label class="checkbox-container">
+              <input type="checkbox" checked (change)="toggleTask(task)" />
+              <span class="checkmark"></span>
+            </label>
+            <div class="task-info">
+              <h3>{{ task.title }}</h3>
+              <div class="task-meta">
+                <span class="task-date">📅 {{ task.createdAt | date:'dd MMM, HH:mm' }}</span>
+              </div>
+            </div>
+          </div>
+          <button class="btn-icon delete" (click)="deleteTask(task.id!)">🗑️</button>
+        </article>
+      </div>
+    </section>
+
   </div>
 </div>

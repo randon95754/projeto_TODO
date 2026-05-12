@@ -27,17 +27,17 @@ import {
 })
 export class TaskComponent implements OnInit {
 
-  // 🧠 Kanban state real
   pendingTasks: Task[] = [];
   doneTasks: Task[] = [];
-  tasks: Task[] = [];
+  
   newTask: string = '';
+  
+  hasDeadline: boolean = false;
+  dueDateValue: string = '';
+  dueTimeValue: string = '23:59';
 
-  // 🌙 DARK MODE STATE
   darkMode: boolean = false;
 
-
-  
   constructor(
     private service: TaskService,
     private ngZone: NgZone
@@ -49,16 +49,13 @@ export class TaskComponent implements OnInit {
   }
 
   /* ==============================
-     🌙 DARK MODE
+      🌙 DARK MODE
   ============================== */
 
   toggleTheme(): void {
     if (typeof document === 'undefined') return;
-
     this.darkMode = !this.darkMode;
-
     document.body.classList.toggle('dark', this.darkMode);
-
     try {
       localStorage.setItem('theme', this.darkMode ? 'dark' : 'light');
     } catch (e) {
@@ -68,127 +65,194 @@ export class TaskComponent implements OnInit {
 
   loadTheme(): void {
     if (typeof document === 'undefined') return;
-
     const savedTheme = localStorage.getItem('theme');
-
     this.darkMode = savedTheme === 'dark';
-
     document.body.classList.toggle('dark', this.darkMode);
   }
 
   /* ==============================
-     📥 LOAD TASKS (KANBAN SPLIT)
+      📥 LOAD TASKS
   ============================== */
 
- loadTasks(): void {
-  this.service.getAll().subscribe({
-    next: (data: Task[]) => {
-
-      const tasks = data.map(t => ({
-        ...t,
-        editing: false
-      }));
-
-      this.pendingTasks = tasks.filter(t => !t.completed);
-      this.doneTasks = tasks.filter(t => t.completed);
-
-    },
-    error: (error) => {
-      console.error('Erro ao carregar tarefas:', error);
-    }
-  });
-}
-
-  /* ==============================
-     ➕ ADD TASK
-  ============================== */
-
-  addTask(): void {
-  const title = this.newTask.trim();
-  if (!title) return;
-
-  const task: Task = {
-    title,
-    completed: false,
-    createdAt: new Date()
-  };
-
-  this.service.create(task).subscribe({
-    next: (createdTask: any) => {
-
-      this.ngZone.run(() => {
-        this.pendingTasks.unshift({
-          ...createdTask,
-          editing: false,
-          createdAt: createdTask.createdAt ?? new Date()
-        });
-
-        this.newTask = '';
-      });
-
-    },
-    error: (error) => {
-      console.error('Erro ao adicionar tarefa:', error);
-    }
-  });
-}
-
-
-  toggleTask(task: Task) {
-    task.completed = !task.completed;
-
-    this.refreshColumns();
-  }
-
-
-  private refreshColumns(): void {
-    const allTasks = [...this.pendingTasks, ...this.doneTasks];
-
-    this.pendingTasks = allTasks.filter(t => !t.completed);
-    this.doneTasks = allTasks.filter(t => t.completed);
-  }
-
-  /* ==============================
-     🗑️ DELETE TASK
-  ============================== */
-
-  deleteTask(id: number): void {
-
-    this.pendingTasks = this.pendingTasks.filter(t => t.id !== id);
-    this.doneTasks = this.doneTasks.filter(t => t.id !== id);
-
-    this.service.delete(id).subscribe({
-      next: () => {},
+  loadTasks(): void {
+    this.service.getAll().subscribe({
+      next: (data: Task[]) => {
+        const tasks = data.map(t => ({
+          ...t,
+          editing: false
+        }));
+        
+        this.doneTasks = tasks.filter(t => t.completed);
+        
+        const pending = tasks.filter(t => !t.completed);
+        this.pendingTasks = this.sortByPriority(pending);
+      },
       error: (error) => {
-        console.error('Erro ao excluir tarefa:', error);
+        console.error('Erro ao carregar tarefas:', error);
       }
     });
   }
 
   /* ==============================
-     🧲 DRAG & DROP (KANBAN REAL)
+      ➕ ADD TASK COM PRAZO
   ============================== */
 
-  drop(event: CdkDragDrop<Task[]>) {
+  addTask(): void {
+    const title = this.newTask.trim();
+    if (!title) return;
 
-  // mesmo container → reorder
-  if (event.previousContainer === event.container) {
-    moveItemInArray(
-      event.container.data,
-      event.previousIndex,
-      event.currentIndex
-    );
-    return;
+    let dueDateTime: Date | null = null;
+    let hasDeadlineFlag = this.hasDeadline;
+
+    if (this.hasDeadline && this.dueDateValue) {
+      dueDateTime = new Date(`${this.dueDateValue}T${this.dueTimeValue}:00`);
+      if (isNaN(dueDateTime.getTime())) {
+        console.error('Data inválida');
+        return;
+      }
+    } else {
+      hasDeadlineFlag = false;
+    }
+
+    const task: Task = {
+      title,
+      completed: false,
+      createdAt: new Date(),
+      dueDate: dueDateTime,
+      hasDeadline: hasDeadlineFlag
+    };
+
+    this.service.create(task).subscribe({
+      next: (createdTask: any) => {
+        this.ngZone.run(() => {
+          const newTaskObj = {
+            ...createdTask,
+            editing: false,
+            createdAt: createdTask.createdAt ?? new Date(),
+            dueDate: dueDateTime,
+            hasDeadline: hasDeadlineFlag
+          };
+
+          this.pendingTasks.unshift(newTaskObj);
+          this.pendingTasks = this.sortByPriority(this.pendingTasks);
+
+          this.newTask = '';
+          this.hasDeadline = false;
+          this.dueDateValue = '';
+          this.dueTimeValue = '23:59';
+        });
+      },
+      error: (error) => {
+        console.error('Erro ao adicionar tarefa:', error);
+      }
+    });
   }
 
-  // move entre colunas
-  const task = event.previousContainer.data[event.previousIndex];
+  /* ==============================
+      🕒 CÁLCULO DO TEMPO RESTANTE
+  ============================== */
 
-  // atualiza status
-  task.completed = event.container.id.includes('done');
+  getTimeRemaining(task: Task): { text: string; status: 'normal' | 'warning' | 'expired' } {
+    if (!task.hasDeadline || !task.dueDate) {
+      return { text: '', status: 'normal' };
+    }
+    
+    const now = new Date().getTime();
+    const due = new Date(task.dueDate).getTime();
+    const diff = due - now;
 
-  this.refreshColumns();
-}
+    if (diff <= 0) {
+      return { text: '⏰ Expirado', status: 'expired' };
+    }
 
+    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((diff % (86400000)) / (1000 * 60 * 60));
+    const minutes = Math.floor((diff % (3600000)) / (1000 * 60));
 
+    let text = '';
+    if (days > 0) text = `${days}d ${hours}h`;
+    else if (hours > 0) text = `${hours}h ${minutes}min`;
+    else text = `${minutes}min`;
+
+    const status = days < 3 ? 'warning' : 'normal';
+    
+    return { text, status };
+  }
+
+  /* ==============================
+      🎯 PRIORIDADE (ordenar por prazo)
+  ============================== */
+
+  private sortByPriority(tasks: Task[]): Task[] {
+    return [...tasks].sort((a, b) => {
+      // Tarefas expiradas vão para o topo
+      const aIsExpired = a.hasDeadline && a.dueDate && new Date(a.dueDate).getTime() < new Date().getTime();
+      const bIsExpired = b.hasDeadline && b.dueDate && new Date(b.dueDate).getTime() < new Date().getTime();
+      
+      if (aIsExpired && !bIsExpired) return -1;
+      if (!aIsExpired && bIsExpired) return 1;
+      
+      // Ambas expiradas ou ambas não expiradas: ordenar por data mais próxima
+      if (a.hasDeadline && b.hasDeadline && a.dueDate && b.dueDate) {
+        const timeA = new Date(a.dueDate).getTime();
+        const timeB = new Date(b.dueDate).getTime();
+        return timeA - timeB;
+      }
+      
+      // Tarefas sem prazo vão para o final
+      if (!a.hasDeadline && b.hasDeadline) return 1;
+      if (a.hasDeadline && !b.hasDeadline) return -1;
+      
+      return 0;
+    });
+  }
+
+  /* ==============================
+      🗂️ LOGICA DE COLUNAS
+  ============================== */
+
+  toggleTask(task: Task) {
+    task.completed = !task.completed;
+    
+    if (task.completed) {
+      this.pendingTasks = this.pendingTasks.filter(t => t.id !== task.id);
+      this.doneTasks.unshift(task);
+    } else {
+      this.doneTasks = this.doneTasks.filter(t => t.id !== task.id);
+      this.pendingTasks.unshift(task);
+      this.pendingTasks = this.sortByPriority(this.pendingTasks);
+    }
+  }
+
+  deleteTask(id: number): void {
+    this.pendingTasks = this.pendingTasks.filter(t => t.id !== id);
+    this.doneTasks = this.doneTasks.filter(t => t.id !== id);
+    
+    this.service.delete(id).subscribe({
+      error: (error) => console.error('Erro ao excluir tarefa:', error)
+    });
+  }
+
+  drop(event: CdkDragDrop<Task[]>) {
+    if (event.previousContainer === event.container) {
+      moveItemInArray(
+        event.container.data,
+        event.previousIndex,
+        event.currentIndex
+      );
+      return;
+    }
+
+    const task = event.previousContainer.data[event.previousIndex];
+    task.completed = event.container.id.includes('done');
+    
+    if (task.completed) {
+      this.pendingTasks = this.pendingTasks.filter(t => t.id !== task.id);
+      this.doneTasks.unshift(task);
+    } else {
+      this.doneTasks = this.doneTasks.filter(t => t.id !== task.id);
+      this.pendingTasks.unshift(task);
+      this.pendingTasks = this.sortByPriority(this.pendingTasks);
+    }
+  }
 }
