@@ -1,4 +1,294 @@
 /* =========================================
+   SIDEBAR PREMIUM
+   ========================================= */
+
+.sidebar {
+  width: 260px;
+  min-width: 260px;
+  height: 100vh;
+
+  position: fixed;
+  top: 0;
+  left: 0;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+
+  padding: 22px 16px;
+
+  background:
+    linear-gradient(
+      180deg,
+      rgba(15, 23, 42, 0.96),
+      rgba(2, 6, 23, 0.98)
+    );
+
+  border-right: 1px solid rgba(255,255,255,0.05);
+
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+
+  box-shadow:
+    10px 0 40px rgba(0,0,0,0.25);
+
+  overflow: hidden;
+
+  transition:
+    width 0.3s ease,
+    min-width 0.3s ease;
+
+  z-index: 999;
+}
+
+/* =========================================
+   SIDEBAR RECOLHIDA
+   ========================================= */
+
+.sidebar.collapsed {
+  width: 90px;
+  min-width: 90px;
+}
+
+/* =========================================
+   TOPO
+   ========================================= */
+
+.sidebar-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  margin-bottom: 35px;
+
+  padding: 0 4px;
+}
+
+/* =========================================
+   LOGO
+   ========================================= */
+
+.sidebar-logo {
+  display: flex;
+  align-items: center;
+}
+
+.sidebar-logo h2 {
+  font-size: 24px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+
+  background: linear-gradient(
+    135deg,
+    #ffffff,
+    #818cf8
+  );
+
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* =========================================
+   BOTÃO MENU
+   ========================================= */
+
+.collapse-btn {
+  width: 42px;
+  height: 42px;
+
+  border: none;
+  border-radius: 14px;
+
+  background: rgba(255,255,255,0.05);
+
+  color: #cbd5e1;
+
+  cursor: pointer;
+
+  transition: all 0.25s ease;
+
+  font-size: 18px;
+}
+
+.collapse-btn:hover {
+  background: rgba(99,102,241,0.18);
+
+  color: white;
+
+  transform: rotate(90deg) scale(1.05);
+}
+
+/* =========================================
+   MENU
+   ========================================= */
+
+.sidebar-menu {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 20px
+}
+
+/* =========================================
+   ITEM
+   ========================================= */
+
+.sidebar-item {
+  width: 100%;
+
+  border: none;
+  outline: none;
+
+  background: transparent;
+
+  display: flex;
+  align-items: center;
+  gap: 14px;
+
+  padding: 14px 16px;
+
+  border-radius: 18px;
+
+  color: #94a3b8;
+
+  cursor: pointer;
+
+  transition: all 0.25s ease;
+
+  font-size: 0.95rem;
+  font-weight: 600;
+
+  position: relative;
+
+  overflow: hidden;
+}
+
+/* LINHA LATERAL ANIMADA */
+
+.sidebar-item::before {
+  content: "";
+
+  position: absolute;
+
+  left: 0;
+  top: 50%;
+
+  width: 4px;
+  height: 0;
+
+  border-radius: 10px;
+
+  background: #818cf8;
+
+  transform: translateY(-50%);
+
+  transition: height 0.25s ease;
+}
+
+/* HOVER */
+
+.sidebar-item:hover {
+  background: rgba(99,102,241,0.10);
+
+  color: #ffffff;
+
+  transform: translateX(4px);
+}
+
+.sidebar-item:hover::before {
+  height: 60%;
+}
+
+/* ITEM ATIVO */
+
+.sidebar-item.active {
+  background:
+    linear-gradient(
+      135deg,
+      rgba(99,102,241,0.22),
+      rgba(139,92,246,0.12)
+    );
+
+  border: 1px solid rgba(129,140,248,0.15);
+
+  color: white;
+
+  box-shadow:
+    0 10px 30px rgba(99,102,241,0.15);
+}
+
+.sidebar-item.active::before {
+  height: 70%;
+}
+
+/* =========================================
+   ÍCONES
+   ========================================= */
+
+.sidebar-icon {
+  min-width: 22px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 18px;
+
+  transition: transform 0.2s ease;
+}
+
+.sidebar-item:hover .sidebar-icon {
+  transform: scale(1.15);
+}
+
+/* =========================================
+   TEXTO
+   ========================================= */
+
+.sidebar-item span {
+  white-space: nowrap;
+}
+
+/* =========================================
+   RECOLHIDA
+   ========================================= */
+
+.sidebar.collapsed .sidebar-item {
+  justify-content: center;
+  padding: 14px;
+}
+
+.sidebar.collapsed .sidebar-item span:not(.sidebar-icon) {
+  opacity: 0;
+  width: 0;
+  overflow: hidden;
+}
+
+.sidebar.collapsed .sidebar-icon {
+  margin: 0;
+}
+
+/* =========================================
+   RESPONSIVO
+   ========================================= */
+
+@media (max-width: 768px) {
+
+  .sidebar {
+    transform: translateX(-100%);
+  }
+
+  .sidebar.mobile-open {
+    transform: translateX(0);
+  }
+}
+
+
+
+
+
+
+/* =========================================
    ESTRUTURA PRINCIPAL
    ========================================= */
 .container {
@@ -226,7 +516,9 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 25px;
+  margin-bottom: 20px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border);
 }
 
 .column-header h2 {
@@ -245,12 +537,13 @@
 .expired-header .dot { background: #ef4444; }
 
 .count-badge {
-  background: var(--card);
+  background: var(--primary);
+  color: white;
+  font-size: 0.75rem;
+  font-weight: 800;
   padding: 2px 10px;
   border-radius: 20px;
-  font-size: 0.75rem;
-  color: var(--text-soft);
-  border: 1px solid var(--border);
+  box-shadow: 0 4px 10px rgba(99, 102, 241, 0.2);
 }
 
 /* =========================================
@@ -426,4 +719,430 @@
   0%, 100% { transform: translateX(0); }
   25% { transform: translateX(-3px); }
   75% { transform: translateX(3px); }
+}
+
+
+
+/*Configurações do calendario*/
+/* --- ADIÇÕES PARA AS DUAS COLUNAS LADO A LADO --- */
+
+/* Container que segura as duas colunas de tarefas */
+.tasks-side-container {
+  display: flex;
+  flex-direction: row; /* Coloca uma coluna ao lado da outra */
+  gap: 20px;
+  align-items: flex-start;
+  animation: slideIn 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+/* Ajuste no Layout para suportar a largura maior */
+.calendar-layout {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 0;
+  padding: 40px 20px;
+  max-width: 100%; /* Permite que o layout use o espaço necessário */
+  transition: gap 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.calendar-layout.has-selection {
+  gap: 30px;
+}
+
+/* --- CONFIGURAÇÕES CONSOLIDADAS DO CALENDÁRIO --- */
+
+.calendar-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  padding: 30px;
+  box-shadow: var(--shadow);
+  flex: 0 0 500px;
+  width: 500px;
+  transition: all 0.4s ease;
+}
+
+.calendar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.nav-arrow {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  color: var(--text-strong);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  position: relative !important;
+}
+
+.nav-arrow:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+  background: var(--card);
+}
+
+.month-title {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--text-strong);
+  text-transform: capitalize;
+}
+
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 10px;
+}
+
+.weekday {
+  text-align: center;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--primary);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  padding-bottom: 15px;
+}
+
+.calendar-day {
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border-radius: 14px;
+  font-weight: 500;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  color: var(--text-strong);
+  position: relative;
+}
+
+.calendar-day:hover:not(.empty) {
+  background: var(--bg);
+  color: var(--primary);
+  transform: translateY(-2px);
+}
+
+.empty-state {
+  text-align: center;
+  padding: 20px;
+  color: var(--text-soft);
+  font-size: 0.85rem;
+  font-style: italic;
+}
+
+.calendar-day.selected {
+  background: var(--primary) !important;
+  color: #ffffff !important;
+  font-weight: 700;
+  box-shadow: 0 8px 15px -3px rgba(99, 102, 241, 0.4);
+}
+
+/* Colunas de Tarefas (Prazos e Contínuas) */
+.day-tasks-section {
+  flex: 0 0 320px;
+  width: 320px;
+  background: var(--column); /* Tom intermediário do seu styles.css */
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  box-shadow: var(--shadow);
+}
+
+.mini-task-card {
+  background: var(--card); /* Fundo branco no light / Slate no dark */
+  padding: 14px;
+  border-radius: 16px;
+  margin-bottom: 12px;
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--primary); /* Destaque lateral */
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+}
+
+.mini-task-card:hover {
+  transform: translateX(5px);
+  border-color: var(--primary);
+}
+
+.mini-task-card h3 {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--text-strong);
+  margin-bottom: 6px;
+  line-height: 1.2;
+}
+
+.mini-task-card.continuous {
+  border-left-color: #2dd4bf; /* Cor verde/teal para diferenciar de prazos */
+  background: var(--card); /* Mantém o padrão de card */
+}
+
+.task-meta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.task-meta .time {
+  font-size: 0.75rem;
+  color: var(--text-soft);
+  font-weight: 500;
+}
+
+.task-dot {
+  position: absolute;
+  bottom: 8px;
+  width: 6px;
+  height: 6px;
+  background-color: var(--primary);
+  border-radius: 50%;
+  box-shadow: 0 0 5px var(--primary);
+}
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateX(30px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+/* Ajuste mobile: Empilha tudo em telas pequenas */
+@media (max-width: 1200px) {
+  .tasks-side-container {
+    flex-wrap: wrap; /* Quebra as colunas se não houver largura */
+    justify-content: center;
+  }
+}
+  @media (max-width: 900px) {
+  .calendar-layout {
+    flex-direction: column;
+    align-items: center;
+  }
+  .tasks-side-container {
+    flex-direction: column;
+    width: 100%;
+  }
+  .day-tasks-section {
+    width: 100%;
+    flex: none;
+  }
+}
+
+/* Overlay ocupa a tela toda mas é transparente */
+/* Overlay com desfoque de fundo para destacar o painel */
+.side-panel-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(4px); /* Efeito de vidro no fundo */
+  z-index: 9999;
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* Painel Lateral Estilo Notion */
+.side-panel {
+  width: 100%;
+  max-width: 650px;
+  height: 100%;
+  background: #1a1c23; /* Cor sólida levemente mais clara que o fundo */
+  box-shadow: -10px 0 30px rgba(0, 0, 0, 0.5);
+  display: flex;
+  flex-direction: column;
+  padding: 40px; /* Mais respiro nas bordas */
+  animation: slideInRight 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  border-left: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* Título Gigante e sem bordas */
+.title-textarea {
+  width: 100%;
+  font-size: 2.2rem;
+  font-weight: 800;
+  background: transparent;
+  border: none;
+  color: #ffffff;
+  resize: none;
+  outline: none;
+  margin: 20px 0;
+  font-family: inherit;
+  line-height: 1.2;
+}
+
+/* Grid de Informações (Status e Prazo) */
+.panel-metadata {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  margin-bottom: 30px;
+}
+
+.meta-row {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  font-size: 0.9rem;
+}
+
+.meta-label {
+  width: 80px;
+  color: #6b7280; /* Cinza suave */
+  font-weight: 500;
+}
+
+.status-badge {
+  background: rgba(99, 102, 241, 0.1);
+  color: #818cf8;
+  padding: 4px 12px;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 0.8rem;
+}
+
+/* Área de Descrição */
+.description-textarea {
+  width: 100%;
+  flex: 1;
+  background: transparent;
+  border: none;
+  color: #d1d5db;
+  font-size: 1rem;
+  line-height: 1.7;
+  resize: none;
+  outline: none;
+  margin-top: 20px;
+  font-family: inherit;
+}
+
+/* Botões de Ação no Topo */
+.panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.close-btn-side {
+  background: rgba(255, 255, 255, 0.05);
+  border: none;
+  color: #fff;
+  width: 35px;
+  height: 35px;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+}
+
+.close-btn-side:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+@keyframes slideInRight {
+  from { transform: translateX(100%); }
+  to { transform: translateX(0); }
+}
+
+/* Conteúdo Interno */
+.panel-header {
+  padding: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.panel-content {
+  flex: 1;
+  padding: 0 40px;
+  overflow-y: auto;
+}
+
+/* Estilo do Título (Sem bordas, igual Notion) */
+.title-textarea {
+  width: 100%;
+  font-size: 2.5rem;
+  font-weight: 800;
+  background: transparent;
+  border: none;
+  color: var(--text-strong);
+  resize: none;
+  margin-top: 10px;
+  outline: none;
+}
+
+.panel-metadata {
+  margin-top: 30px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.meta-row {
+  display: grid;
+  grid-template-columns: 120px 1fr;
+  align-items: center;
+  font-size: 0.9rem;
+}
+
+.meta-label {
+  color: var(--text-soft);
+}
+
+.meta-value, .status-badge {
+  color: var(--text-strong);
+}
+
+.panel-divider {
+  margin: 30px 0;
+  border: 0;
+  border-top: 1px solid var(--border);
+}
+
+.description-textarea {
+  width: 100%;
+  min-height: 300px;
+  background: transparent;
+  border: none;
+  color: var(--text-strong);
+  font-size: 1.1rem;
+  line-height: 1.6;
+  resize: none;
+  outline: none;
+  margin-top: 15px;
+}
+
+.close-btn-side {
+  background: transparent;
+  border: none;
+  color: var(--text-soft);
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 5px;
+}
+
+.close-btn-side:hover {
+  color: var(--primary);
+}
+
+.panel-footer {
+  padding: 20px 40px;
+  font-size: 0.75rem;
+  color: var(--text-soft);
+  border-top: 1px solid var(--border);
 }
