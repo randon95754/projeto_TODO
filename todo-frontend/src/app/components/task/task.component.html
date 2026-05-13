@@ -54,10 +54,10 @@
           <p>Gerencie sua rotina com simplicidade e agilidade</p>
         </header>
 
-        <form class="task-form" (ngSubmit)="addTask()">
+        <form class="task-form" (ngSubmit)="addTask($event)" >
           <div class="input-group">
             <input type="text" [(ngModel)]="newTask" name="newTask" placeholder="O que precisa ser feito?" required />
-            <button type="submit" class="add-btn"><span>+</span></button>
+            <button type="submit" class="add-btn" (mousedown)="addTask($event)"(click)="$event.stopPropagation()"><span>+</span></button>
           </div>
 
           <div class="deadline-premium-block">
@@ -237,32 +237,33 @@
   <div class="side-panel" (click)="$event.stopPropagation()">
     
     <header class="panel-header">
-      <button class="close-btn-side" (click)="closeDetails()">
-        <span>双</span> </button>
-      <div class="panel-actions">
-        <button class="btn-delete-side" (click)="deleteTask(selectedTask.id!); closeDetails()">
-          🗑️ Excluir
-        </button>
-      </div>
+      <button class="close-btn-side" (click)="closeDetails()">✕</button>
+      <button class="btn-icon delete" (click)="deleteTask(selectedTask.id!); closeDetails()">
+        🗑️ Excluir Tarefa
+      </button>
     </header>
 
     <div class="panel-content">
-      <textarea class="title-textarea" 
-                [(ngModel)]="selectedTask.title" 
-                placeholder="Título da tarefa"
-                rows="1"></textarea>
+      <textarea 
+        class="title-textarea" 
+        [(ngModel)]="selectedTask.title" 
+        placeholder="Título da tarefa"
+        rows="1">
+      </textarea>
 
       <div class="panel-metadata">
         <div class="meta-row">
           <span class="meta-label">Status</span>
-          <span class="status-badge" [class.done]="selectedTask.completed">
+          <span class="status-badge">
             {{ selectedTask.completed ? 'Concluída' : 'Pendente' }}
           </span>
         </div>
         
         <div class="meta-row" *ngIf="selectedTask.hasDeadline">
           <span class="meta-label">Prazo</span>
-          <span class="meta-value">{{ selectedTask.dueDate | date:'dd MMM yyyy, HH:mm' }}</span>
+          <span class="meta-value" style="color: #ef4444; font-weight: 600;">
+            {{ selectedTask.dueDate | date:'dd MMM, HH:mm' }}
+          </span>
         </div>
       </div>
 
@@ -270,9 +271,10 @@
 
       <div class="description-section">
         <label class="meta-label">Descrição</label>
-        <textarea [(ngModel)]="selectedTask.description" 
-                  placeholder="Adicione um comentário ou descrição detalhada..."
-                  class="description-textarea">
+        <textarea 
+          class="description-textarea" 
+          [(ngModel)]="selectedTask.description" 
+          placeholder="Adicione uma descrição detalhada...">
         </textarea>
       </div>
     </div>

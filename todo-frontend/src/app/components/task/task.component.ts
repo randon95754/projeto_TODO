@@ -121,30 +121,52 @@ isSelected(day: Date): boolean {
 }
 
 // Verifica se existe tarefa no dia (para mostrar a bolinha vermelha)
-hasTasksOnDay(day: Date | null): boolean {
-  if (!day) return false;
+hasTasksOnDay(day: Date): boolean {
+  const target = new Date(day);
 
-  const targetTime = new Date(day.getFullYear(), day.getMonth(), day.getDate()).getTime();
-  const allTasks = [...this.pendingTasks, ...this.doneTasks];
+  // Remove horas para comparar apenas datas
+  target.setHours(0, 0, 0, 0);
 
-  return allTasks.some(task => {
-    // REGRA 1: Ignorar se não houver prazo ou se faltarem datas essenciais
-    if (!task.hasDeadline || !task.dueDate || !task.createdAt) {
-      return false;
+  return [...this.pendingTasks, ...this.doneTasks].some(task => {
+
+    // DATA DE CRIAÇÃO
+    if (!task.createdAt) {
+    return false;
+}
+
+    const createdAt = new Date(task.createdAt);
+    createdAt.setHours(0, 0, 0, 0);
+
+    // 1) BOLINHA NO DIA DA CRIAÇÃO
+    const isCreationDay =
+      createdAt.getTime() === target.getTime();
+
+    if (isCreationDay) {
+      return true;
     }
 
-    // REGRA 2: Converter datas garantindo que não são nulas
-    const start = new Date(task.createdAt);
-    const end = new Date(task.dueDate);
+    // 2) TAREFAS COM PRAZO
+    if (task.hasDeadline && task.dueDate) {
 
-    const startTime = new Date(start.getFullYear(), start.getMonth(), start.getDate()).getTime();
-    const endTime = new Date(end.getFullYear(), end.getMonth(), end.getDate()).getTime();
+      const dueDate = new Date(task.dueDate);
+      dueDate.setHours(0, 0, 0, 0);
 
-    // Cálculo do alerta (3 dias antes do fim)
-    const alertTime = new Date(end.getFullYear(), end.getMonth(), end.getDate() - 3).getTime();
+      // DIA DO VENCIMENTO
+      const isDueDay =
+        dueDate.getTime() === target.getTime();
 
-    // REGRA 3: Lógica das bolinhas (Início, Alerta de 3 dias, Prazo Final)
-    return targetTime === startTime || targetTime === alertTime || targetTime === endTime;
+      // 3 DIAS ANTES
+      const warningDate = new Date(dueDate);
+      warningDate.setDate(warningDate.getDate() - 3);
+      warningDate.setHours(0, 0, 0, 0);
+
+      const isWarningDay =
+        warningDate.getTime() === target.getTime();
+
+      return isDueDay || isWarningDay;
+    }
+
+    return false;
   });
 }
 
@@ -243,41 +265,58 @@ get tasksForSelectedDay() {
     });
   }
 
-  addTask(): void {
-    const title = this.newTask.trim();
-    if (!title) return;
-
-    let dueDateTime: Date | null = null;
-    if (this.hasDeadline && this.dueDateValue) {
-      dueDateTime = new Date(`${this.dueDateValue}T${this.dueTimeValue}:00`);
-    }
-
-    const task: Task = {
-      title,
-      completed: false,
-      createdAt: new Date(),
-      dueDate: dueDateTime,
-      hasDeadline: this.hasDeadline
-    };
-
-    this.service.create(task).subscribe({
-      next: (createdTask: any) => {
-        this.ngZone.run(() => {
-          const newTaskObj = {
-            ...createdTask,
-            editing: false,
-            dueDate: dueDateTime,
-            hasDeadline: this.hasDeadline
-          };
-          this.pendingTasks.unshift(newTaskObj);
-          this.pendingTasks = this.sortByPriority(this.pendingTasks);
-          this.saveTasks();
-          this.newTask = '';
-          this.hasDeadline = false;
-        });
-      }
-    });
+addTask(event?: Event): void {
+  // 1. Impede o comportamento padrão do formulário (que pode causar o refresh invisível)
+  if (event) {
+    event.preventDefault();
+    event.stopPropagation();
   }
+
+  const title = this.newTask.trim();
+  if (!title) return;
+
+  let dueDateTime: Date | null = null;
+  if (this.hasDeadline && this.dueDateValue) {
+    dueDateTime = new Date(`${this.dueDateValue}T${this.dueTimeValue}:00`);
+  }
+
+  const task: Task = {
+    title,
+    completed: false,
+    createdAt: new Date(),
+    dueDate: dueDateTime,
+    hasDeadline: this.hasDeadline
+  };
+
+  this.service.create(task).subscribe({
+    next: (createdTask: any) => {
+      // 2. O ngZone garante que a atualização ocorra dentro do ciclo do Angular
+      this.ngZone.run(() => {
+        const newTaskObj = {
+          ...createdTask,
+          editing: false,
+          dueDate: dueDateTime,
+          hasDeadline: this.hasDeadline
+        };
+        
+        // 3. ATUALIZAÇÃO CRÍTICA: Em vez de .unshift(), criamos um NOVO array.
+        // Isso força o Angular a disparar a detecção de mudanças imediatamente.
+        const updatedList = [newTaskObj, ...this.pendingTasks];
+        this.pendingTasks = this.sortByPriority(updatedList);
+        
+        this.saveTasks();
+
+        // 4. Abre os detalhes e reseta os campos
+        this.openTaskDetails(newTaskObj);
+        this.newTask = '';
+        this.hasDeadline = false;
+      });
+    },
+    error: (err) => {
+      console.error('Erro ao adicionar tarefa:', err);
+    }
+  });
+}
 
   toggleTask(task: Task) {
     task.completed = !task.completed;
