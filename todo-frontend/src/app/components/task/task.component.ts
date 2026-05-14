@@ -26,7 +26,7 @@ registerLocaleData(localePt);
 })
 export class TaskComponent implements OnInit {
   private platformId = inject(PLATFORM_ID);
-
+  
   pendingTasks: Task[] = [];
   doneTasks: Task[] = [];
   newTask: string = '';
@@ -73,12 +73,15 @@ export class TaskComponent implements OnInit {
 
   // 4. Preenche os dias reais do mês (apenas uma vez!)
   for (let i = 1; i <= lastDateOfMonth; i++) {
-    days.push(new Date(year, month, i));
+    const date = new Date(year, month, i, 12, 0, 0);
+    days.push(date);
   }
   
   // 5. Atualiza a lista que o HTML utiliza
   this.calendarDays = days as any;
 }
+
+
 // Navegação de meses
 prevMonth(): void {
   this.viewDate = new Date(this.viewDate.getFullYear(), this.viewDate.getMonth() - 1, 1);
@@ -202,19 +205,35 @@ get tasksForSelectedDay() {
 }
 
   ngOnInit(): void {
-    if (isPlatformBrowser(this.platformId)) {
-      this.loadTheme();
-      const saved = localStorage.getItem('minhasTarefas');
-      if (saved) {
-        const allTasks = JSON.parse(saved);
-        this.doneTasks = allTasks.filter((t: any) => t.completed);
-        const pending = allTasks.filter((t: any) => !t.completed);
-        this.pendingTasks = this.sortByPriority(pending);
-      } else {
-        this.loadTasks();
-      }
+  if (isPlatformBrowser(this.platformId)) {
+    this.loadTheme();
+    const saved = localStorage.getItem('minhasTarefas');
+    
+    if (saved) {
+      // 1. Convertemos o JSON para um array genérico
+      const rawTasks = JSON.parse(saved);
+      
+      // 2. MAPEAMOS o array para transformar strings de data em objetos Date reais
+      const allTasks: Task[] = rawTasks.map((t: any) => ({
+        ...t,
+        // Converte a string de volta para objeto Date
+        createdAt: t.createdAt ? new Date(t.createdAt) : new Date(),
+        // Faz o mesmo para o prazo, se existir
+        dueDate: t.dueDate ? new Date(t.dueDate) : null
+      }));
+
+      // 3. Filtramos as tarefas usando os objetos já convertidos
+      this.doneTasks = allTasks.filter((t: Task) => t.completed);
+      const pending = allTasks.filter((t: Task) => !t.completed);
+      
+      // 4. Ordenamos as pendentes
+      this.pendingTasks = this.sortByPriority(pending);
+      
+    } else {
+      this.loadTasks();
     }
   }
+}
 
   // --- NAVEGAÇÃO ---
   navigateTo(tabName: string) {
@@ -294,6 +313,7 @@ addTask(event?: Event): void {
       this.ngZone.run(() => {
         const newTaskObj = {
           ...createdTask,
+          createdAt: new Date(createdTask.createdAt),
           editing: false,
           dueDate: dueDateTime,
           hasDeadline: this.hasDeadline
@@ -316,6 +336,38 @@ addTask(event?: Event): void {
       console.error('Erro ao adicionar tarefa:', err);
     }
   });
+}
+
+// Adicione isso ao seu TaskComponent
+updateTaskDate(event: any) {
+  if (this.selectedTask && event.target.value) {
+    const dateStr = event.target.value; // Formato YYYY-MM-DD
+    const currentTime = this.selectedTask.dueDate ? 
+                        new Date(this.selectedTask.dueDate) : 
+                        new Date();
+    
+    // Mantém a hora atual, mas muda o dia, mês e ano
+    const [year, month, day] = dateStr.split('-').map(Number);
+    const newDate = new Date(currentTime);
+    newDate.setFullYear(year, month - 1, day);
+    
+    this.selectedTask.dueDate = newDate;
+    this.selectedTask.hasDeadline = true;
+    this.saveTasks(); // Persiste a mudança
+  }
+}
+
+updateTaskTime(event: any) {
+  if (this.selectedTask && event.target.value) {
+    const [hours, minutes] = event.target.value.split(':').map(Number);
+    const newDate = this.selectedTask.dueDate ? 
+                    new Date(this.selectedTask.dueDate) : 
+                    new Date();
+    
+    newDate.setHours(hours, minutes);
+    this.selectedTask.dueDate = newDate;
+    this.saveTasks();
+  }
 }
 
   toggleTask(task: Task) {
@@ -391,7 +443,21 @@ addTask(event?: Event): void {
 
 // Função para abrir os detalhes
 openTaskDetails(task: any) {
-  this.selectedTask = task;
+ this.selectedTask = task;
+  
+  // Se a tarefa acabou de ser criada, o JS pode ter jogado ela para o dia 14 (UTC)
+  // Vamos garantir que os inputs mostrem o dia 13 (Hoje)
+  const dataLocal = new Date(task.createdAt);
+
+  if (!this.selectedTask.dueDate) {
+    // Força o input a mostrar a data baseada no dia em que você está agora
+    this.dueDateValue = dataLocal.toLocaleDateString('en-CA'); // Formato YYYY-MM-DD
+    this.dueTimeValue = '23:59';
+  } else {
+    const d = new Date(this.selectedTask.dueDate);
+    this.dueDateValue = d.toLocaleDateString('en-CA');
+    this.dueTimeValue = d.toTimeString().substring(0, 5);
+  }
 }
 
 // Função para fechar/salvar

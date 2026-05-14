@@ -59,25 +59,6 @@
             <input type="text" [(ngModel)]="newTask" name="newTask" placeholder="O que precisa ser feito?" required />
             <button type="submit" class="add-btn" (mousedown)="addTask($event)"(click)="$event.stopPropagation()"><span>+</span></button>
           </div>
-
-          <div class="deadline-premium-block">
-            <label class="deadline-toggle-container">
-              <input type="checkbox" [(ngModel)]="hasDeadline" name="hasDeadline" />
-              <div class="custom-switch"></div>
-              <span class="switch-label-text">Adicionar prazo</span>
-            </label>
-
-            <div class="deadline-inline-inputs" *ngIf="hasDeadline">
-              <div class="field-box">
-                <label>Data</label>
-                <input type="date" [(ngModel)]="dueDateValue" name="dueDate" />
-              </div>
-              <div class="field-box">
-                <label>Hora</label>
-                <input type="time" [(ngModel)]="dueTimeValue" name="dueTime" />
-              </div>
-            </div>
-          </div>
         </form>
 
         <div class="board" cdkDropListGroup>
@@ -103,12 +84,12 @@
                     <input *ngIf="task.editing" class="edit-input" [(ngModel)]="task.title" (blur)="task.editing = false" (keyup.enter)="task.editing = false" (click)="$event.stopPropagation()" autofocus />
                     <h3 *ngIf="!task.editing">
                       {{ task.title }} 
-                      <span class="date-created">📅 {{ task.createdAt | date:'dd MMM, HH:mm' }}</span>
+                      <span class="date-created">📅 {{ task.createdAt | date:'dd MMM, HH:mm' : 'UTC-3' }}</span>
                       <span *ngIf="task.description" class="desc-indicator">📝</span>
                     </h3>
                     
                     <div class="task-dates" *ngIf="task.hasDeadline">
-                      <span class="date-due">⏰ {{ task.dueDate | date:'dd MMM, HH:mm' }}</span>
+                      <span class="date-due">⏰ {{ task.dueDate | date:'dd MMM, HH:mm' : 'UTC-3' }}</span>
                       <span class="time-left" 
                             [class.time-normal]="getTimeRemaining(task).status === 'normal'"
                             [class.time-warning]="getTimeRemaining(task).status === 'warning'"
@@ -147,7 +128,7 @@
                   <div class="task-info">
                     <h3>{{ task.title }} <span *ngIf="task.description" class="desc-indicator">📝</span></h3>
                     <div class="task-meta">
-                      <span class="task-date">📅 {{ task.createdAt | date:'dd MMM, HH:mm' }}</span>
+                      <span class="task-date">📅 {{ task.createdAt | date:'dd MMM, HH:mm' : '-0300' }}</span>
                     </div>
                   </div>
                 </div>
@@ -234,34 +215,72 @@
       </div>
 
       <div class="side-panel-overlay" *ngIf="selectedTask" (click)="closeDetails()">
+
+  <!-- SIDE PANEL -->
   <div class="side-panel" (click)="$event.stopPropagation()">
-    
+
+    <!-- HEADER -->
     <header class="panel-header">
       <button class="close-btn-side" (click)="closeDetails()">✕</button>
-      <button class="btn-icon delete" (click)="deleteTask(selectedTask.id!); closeDetails()">
-        🗑️ Excluir Tarefa
-      </button>
     </header>
 
+    <!-- CONTEÚDO PRINCIPAL -->
     <div class="panel-content">
-      <textarea 
-        class="title-textarea" 
-        [(ngModel)]="selectedTask.title" 
-        placeholder="Título da tarefa"
-        rows="1">
-      </textarea>
 
-      <div class="panel-metadata">
-        <div class="meta-row">
-          <span class="meta-label">Status</span>
-          <span class="status-badge">
+      <!-- TOPO: TÍTULO E AÇÕES -->
+      <div class="panel-top-row">
+        <textarea class="title-textarea" 
+                  [(ngModel)]="selectedTask.title" 
+                  (blur)="saveTasks()"
+                  placeholder="Título da tarefa" 
+                  rows="1">
+        </textarea>
+
+        <div class="panel-actions">
+          <span class="status-badge" [class.completed]="selectedTask.completed">
             {{ selectedTask.completed ? 'Concluída' : 'Pendente' }}
           </span>
+
+          <button class="delete-task-btn" (click)="deleteTask(selectedTask.id!); closeDetails()">
+            🗑 Excluir Tarefa
+          </button>
         </div>
+      </div>
+
+      <!-- SEÇÃO PRAZO -->
+      <div class="deadline-section">
         
-        <div class="meta-row" *ngIf="selectedTask.hasDeadline">
-          <span class="meta-label">Prazo</span>
-          <span class="meta-value" style="color: #ef4444; font-weight: 600;">
+        <!-- TOGGLE PRAZO: Vinculado à propriedade da tarefa -->
+        <label class="deadline-toggle-container">
+          <input type="checkbox" 
+                 [(ngModel)]="selectedTask.hasDeadline" 
+                 (change)="saveTasks()" />
+          <div class="custom-switch"></div>
+          <span class="switch-label-text">Adicionar prazo</span>
+        </label>
+
+        <!-- INPUTS DATA/HORA: Aparecem se hasDeadline for true -->
+        <div class="deadline-inline-inputs" *ngIf="selectedTask.hasDeadline">
+          
+          <div class="field-box">
+            <label>DATA</label>
+            <input type="date" 
+                   [ngModel]="dueDateValue" 
+                   (change)="updateTaskDate($event)" />
+          </div>
+
+          <div class="field-box">
+            <label>HORA</label>
+            <input type="time" 
+                   [ngModel]="dueTimeValue" 
+                   (change)="updateTaskTime($event)" />
+          </div>
+        </div>
+
+        <!-- INDICADOR DE PRAZO ATUAL (Visual) -->
+        <div class="current-deadline" *ngIf="selectedTask.hasDeadline && selectedTask.dueDate">
+          <span class="deadline-label">Prazo definido para:</span>
+          <span class="deadline-date">
             {{ selectedTask.dueDate | date:'dd MMM, HH:mm' }}
           </span>
         </div>
@@ -269,18 +288,20 @@
 
       <hr class="panel-divider">
 
+      <!-- DESCRIÇÃO -->
       <div class="description-section">
-        <label class="meta-label">Descrição</label>
-        <textarea 
-          class="description-textarea" 
-          [(ngModel)]="selectedTask.description" 
-          placeholder="Adicione uma descrição detalhada...">
+        <label class="description-label">Descrição</label>
+        <textarea class="description-textarea" 
+                  [(ngModel)]="selectedTask.description" 
+                  (blur)="saveTasks()"
+                  placeholder="Adicione uma descrição detalhada...">
         </textarea>
       </div>
     </div>
 
+    <!-- FOOTER -->
     <footer class="panel-footer">
-      <p>Criado em {{ selectedTask.createdAt | date:'dd/MM/yyyy HH:mm' }}</p>
+      <p>Criado em {{ selectedTask.createdAt | date:'dd/MM/yyyy HH:mm' : 'UTC-3' }}</p>
     </footer>
   </div>
 </div>
