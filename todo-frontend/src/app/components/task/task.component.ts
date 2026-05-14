@@ -126,47 +126,45 @@ isSelected(day: Date): boolean {
 // Verifica se existe tarefa no dia (para mostrar a bolinha vermelha)
 hasTasksOnDay(day: Date): boolean {
   const target = new Date(day);
-
-  // Remove horas para comparar apenas datas
   target.setHours(0, 0, 0, 0);
+  const targetTime = target.getTime();
 
   return [...this.pendingTasks, ...this.doneTasks].some(task => {
-
-    // DATA DE CRIAÇÃO
-    if (!task.createdAt) {
-    return false;
-}
+    if (!task.createdAt) return false;
 
     const createdAt = new Date(task.createdAt);
     createdAt.setHours(0, 0, 0, 0);
+    const creationTime = createdAt.getTime();
 
-    // 1) BOLINHA NO DIA DA CRIAÇÃO
-    const isCreationDay =
-      createdAt.getTime() === target.getTime();
-
-    if (isCreationDay) {
+    // 1) SEMPRE MOSTRAR NO DIA DA CRIAÇÃO (Histórico)
+    if (creationTime === targetTime) {
       return true;
     }
 
     // 2) TAREFAS COM PRAZO
     if (task.hasDeadline && task.dueDate) {
-
       const dueDate = new Date(task.dueDate);
       dueDate.setHours(0, 0, 0, 0);
+      const dueTime = dueDate.getTime();
 
-      // DIA DO VENCIMENTO
-      const isDueDay =
-        dueDate.getTime() === target.getTime();
+      // DIA DO VENCIMENTO: Sempre mostra a bolinha no dia que expirou/expira
+      if (dueTime === targetTime) {
+        return true;
+      }
 
-      // 3 DIAS ANTES
-      const warningDate = new Date(dueDate);
-      warningDate.setDate(warningDate.getDate() - 3);
-      warningDate.setHours(0, 0, 0, 0);
+      // LÓGICA DE AVISO (3 dias antes):
+      // Só mostra se o dia atual do calendário (targetTime) NÃO ultrapassou o vencimento
+      if (targetTime < dueTime) {
+        const warningDate = new Date(dueDate);
+        warningDate.setDate(warningDate.getDate() - 3);
+        warningDate.setHours(0, 0, 0, 0);
+        const warningTime = warningDate.getTime();
 
-      const isWarningDay =
-        warningDate.getTime() === target.getTime();
-
-      return isDueDay || isWarningDay;
+        // Se o dia for o dia do aviso, retorna true
+        if (targetTime === warningTime) {
+          return true;
+        }
+      }
     }
 
     return false;
@@ -204,31 +202,23 @@ get tasksForSelectedDay() {
   return allTasks.filter(task => this.shouldShowTaskOnDay(task, this.selectedDate!));
 }
 
-  ngOnInit(): void {
+ ngOnInit(): void {
   if (isPlatformBrowser(this.platformId)) {
     this.loadTheme();
-    const saved = localStorage.getItem('minhasTarefas');
+    const saved = localStorage.getItem('tasks');
     
     if (saved) {
-      // 1. Convertemos o JSON para um array genérico
       const rawTasks = JSON.parse(saved);
-      
-      // 2. MAPEAMOS o array para transformar strings de data em objetos Date reais
       const allTasks: Task[] = rawTasks.map((t: any) => ({
         ...t,
-        // Converte a string de volta para objeto Date
-        createdAt: t.createdAt ? new Date(t.createdAt) : new Date(),
-        // Faz o mesmo para o prazo, se existir
-        dueDate: t.dueDate ? new Date(t.dueDate) : null
+        // Força a data a ser lida como local ignorando qualquer sufixo de fuso
+        createdAt: t.createdAt ? new Date(new Date(t.createdAt).toLocaleString('en-US', { timeZone: 'America/Sao_Paulo' }).replace(',', '')) : new Date(),
+        dueDate: t.dueDate ? new Date(new Date(t.dueDate).toLocaleString('en-US', { timeZone: 'America/Sao_Paulo' }).replace(',', '')) : null
       }));
 
-      // 3. Filtramos as tarefas usando os objetos já convertidos
       this.doneTasks = allTasks.filter((t: Task) => t.completed);
       const pending = allTasks.filter((t: Task) => !t.completed);
-      
-      // 4. Ordenamos as pendentes
       this.pendingTasks = this.sortByPriority(pending);
-      
     } else {
       this.loadTasks();
     }
@@ -249,11 +239,15 @@ get tasksForSelectedDay() {
 
   // --- PERSISTÊNCIA ---
   saveTasks() {
-    if (isPlatformBrowser(this.platformId)) {
-      const all = [...this.pendingTasks, ...this.doneTasks];
-      localStorage.setItem('minhasTarefas', JSON.stringify(all));
-    }
-  }
+  const dataToSave = [...this.pendingTasks, ...this.doneTasks].map(t => ({
+    ...t,
+    // Salva a data como uma string simples YYYY-MM-DD HH:mm:ss (sem o Z no final)
+    createdAt: t.createdAt instanceof Date ? t.createdAt.toLocaleString('sv-SE').replace(' ', 'T') : t.createdAt,
+    dueDate: t.dueDate instanceof Date ? t.dueDate.toLocaleString('sv-SE').replace(' ', 'T') : t.dueDate
+  }));
+  
+  localStorage.setItem('tasks', JSON.stringify(dataToSave));
+}
 
   // --- DARK MODE ---
   toggleTheme(): void {
@@ -285,7 +279,6 @@ get tasksForSelectedDay() {
   }
 
 addTask(event?: Event): void {
-  // 1. Impede o comportamento padrão do formulário (que pode causar o refresh invisível)
   if (event) {
     event.preventDefault();
     event.stopPropagation();
@@ -295,25 +288,32 @@ addTask(event?: Event): void {
   if (!title) return;
 
   let dueDateTime: Date | null = null;
+  
   if (this.hasDeadline && this.dueDateValue) {
-    dueDateTime = new Date(`${this.dueDateValue}T${this.dueTimeValue}:00`);
+    // 1. Quebramos a string "2026-05-13" e "22:51" em números
+    const [year, month, day] = this.dueDateValue.split('-').map(Number);
+    const [hours, minutes] = this.dueTimeValue.split(':').map(Number);
+
+    // 2. Criamos o Date passando os parâmetros um a um.
+    // IMPORTANTE: O mês no JS começa em 0 (Janeiro = 0, Maio = 4)
+    dueDateTime = new Date(year, month - 1, day, hours, minutes, 0);
   }
 
   const task: Task = {
+    id: Date.now(), // Garanta que tem um ID se o service não gerar na hora
     title,
     completed: false,
-    createdAt: new Date(),
+    createdAt: new Date(), // Isso pega o exato momento atual local
     dueDate: dueDateTime,
     hasDeadline: this.hasDeadline
   };
-
   this.service.create(task).subscribe({
     next: (createdTask: any) => {
       // 2. O ngZone garante que a atualização ocorra dentro do ciclo do Angular
       this.ngZone.run(() => {
         const newTaskObj = {
           ...createdTask,
-          createdAt: new Date(createdTask.createdAt),
+          createdAt: new Date(),
           editing: false,
           dueDate: dueDateTime,
           hasDeadline: this.hasDeadline
@@ -330,6 +330,9 @@ addTask(event?: Event): void {
         this.openTaskDetails(newTaskObj);
         this.newTask = '';
         this.hasDeadline = false;
+
+        this.dueDateValue = ''; 
+      this.dueTimeValue = '23:59';
       });
     },
     error: (err) => {
@@ -339,21 +342,18 @@ addTask(event?: Event): void {
 }
 
 // Adicione isso ao seu TaskComponent
+// No seu task.component.ts
 updateTaskDate(event: any) {
-  if (this.selectedTask && event.target.value) {
-    const dateStr = event.target.value; // Formato YYYY-MM-DD
-    const currentTime = this.selectedTask.dueDate ? 
-                        new Date(this.selectedTask.dueDate) : 
-                        new Date();
+  const dateValue = event.target.value; // formato "YYYY-MM-DD"
+  if (this.selectedTask && dateValue) {
+    const [year, month, day] = dateValue.split('-').map(Number);
+    const d = this.selectedTask.dueDate ? new Date(this.selectedTask.dueDate) : new Date();
     
-    // Mantém a hora atual, mas muda o dia, mês e ano
-    const [year, month, day] = dateStr.split('-').map(Number);
-    const newDate = new Date(currentTime);
-    newDate.setFullYear(year, month - 1, day);
+    // Usar setFullYear com os 3 parâmetros é o jeito mais seguro de manter a HORA local
+    d.setFullYear(year, month - 1, day); 
     
-    this.selectedTask.dueDate = newDate;
-    this.selectedTask.hasDeadline = true;
-    this.saveTasks(); // Persiste a mudança
+    this.selectedTask.dueDate = new Date(d); // Cria nova instância para disparar o Change Detection
+    this.saveTasks();
   }
 }
 
@@ -441,23 +441,21 @@ updateTaskTime(event: any) {
 
   selectedTask: any = null; // Armazena a tarefa que foi clicada
 
-// Função para abrir os detalhes
 openTaskDetails(task: any) {
- this.selectedTask = task;
+  this.selectedTask = task;
   
-  // Se a tarefa acabou de ser criada, o JS pode ter jogado ela para o dia 14 (UTC)
-  // Vamos garantir que os inputs mostrem o dia 13 (Hoje)
-  const dataLocal = new Date(task.createdAt);
+  const d = task.dueDate ? new Date(task.dueDate) : new Date();
 
-  if (!this.selectedTask.dueDate) {
-    // Força o input a mostrar a data baseada no dia em que você está agora
-    this.dueDateValue = dataLocal.toLocaleDateString('en-CA'); // Formato YYYY-MM-DD
-    this.dueTimeValue = '23:59';
-  } else {
-    const d = new Date(this.selectedTask.dueDate);
-    this.dueDateValue = d.toLocaleDateString('en-CA');
-    this.dueTimeValue = d.toTimeString().substring(0, 5);
-  }
+  // Formata YYYY-MM-DD manualmente para evitar o fuso do toISOString
+  const year = d.getFullYear();
+  const month = (d.getMonth() + 1).toString().padStart(2, '0');
+  const day = d.getDate().toString().padStart(2, '0');
+  this.dueDateValue = `${year}-${month}-${day}`;
+
+  // Formata HH:mm manualmente
+  const hours = d.getHours().toString().padStart(2, '0');
+  const minutes = d.getMinutes().toString().padStart(2, '0');
+  this.dueTimeValue = `${hours}:${minutes}`;
 }
 
 // Função para fechar/salvar

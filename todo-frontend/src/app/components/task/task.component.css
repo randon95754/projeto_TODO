@@ -448,19 +448,13 @@
 }
 
 .deadline-inline-inputs {
-  display: grid;
-
-  grid-template-columns: 1fr 1fr;
-
-  gap: 16px;
-
-  padding: 18px;
-
+  background: var(--column);
+  border: 1px solid var(--border);
   border-radius: 20px;
-
-  border: 1px solid rgba(255,255,255,0.08);
-
-  background: rgba(255,255,255,0.02);
+  padding: 18px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
 }
 
 @keyframes slideIn {
@@ -468,49 +462,36 @@
   to { opacity: 1; transform: translateY(0); }
 }
 
-.field-box {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
+.field-box input {
+  width: 100%;
+  /* Usa as variáveis do style.css para adaptar entre light e dark */
+  background: var(--card); 
+  border: 1px solid var(--border);
+  color: var(--text-strong); 
+  
+  padding: 16px;
+  border-radius: 16px;
+  font-size: 1.2rem;
+  outline: none;
+  transition: all 0.25s ease;
+  
+  /* Melhora a aparência dos ícones de data/hora do navegador */
+  color-scheme: light dark;
 }
 
 .field-box label {
   font-size: 0.8rem;
   font-weight: 800;
-
-  color: #9ca3af;
-
+  color: var(--text-soft); /* Agora segue o tema */
   letter-spacing: 0.08em;
-
   margin-bottom: 8px;
-}
-
-.field-box input {
-  width: 100%;
-
-  background: rgba(99,102,241,0.08);
-
-  border: 1px solid transparent;
-
-  border-radius: 16px;
-
-  padding: 16px;
-
-  color: white;
-
-  font-size: 1.2rem;
-
-  outline: none;
-
-  transition: all 0.25s ease;
+  display: block;
 }
 
 
 .field-box input:focus {
-  border-color: #818cf8;
-
-  box-shadow:
-    0 0 20px rgba(99,102,241,0.15);
+  border-color: var(--primary);
+  box-shadow: 0 0 20px rgba(99, 102, 241, 0.15);
 }
 
 .add-btn {
@@ -1029,13 +1010,13 @@
   width: 100%;
   max-width: 650px;
   height: 100%;
-  background: #1a1c23; 
-  box-shadow: -10px 0 30px rgba(0, 0, 0, 0.5);
+  background: var(--panel-bg); /* Alterado de #1a1c23 */
+  box-shadow: var(--shadow-premium); /* Alterado de sombra fixa */
   display: flex;
   flex-direction: column;
   animation: slideInRight 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-  border-left: 1px solid rgba(255, 255, 255, 0.05);
-  overflow: hidden; /* Evita scroll na estrutura principal */
+  border-left: 1px solid var(--border); /* Alterado de rgba branco */
+  overflow: hidden;
 }
 
 /* 3. Cabeçalho de Ações */
@@ -1049,30 +1030,20 @@
 .close-btn-side {
   width: 52px;
   height: 52px;
-
   border-radius: 16px;
-
-  background: rgba(255,255,255,0.04);
-
+  background: var(--column); /* Alterado para usar o tom da coluna (cinza claro no light / escuro no dark) */
   border: none;
-
-  color: #9ca3af;
-
+  color: var(--text-soft);
   font-size: 1.5rem;
-
   cursor: pointer;
-
   transition: all 0.25s ease;
 }
 
 .close-btn-side:hover {
-  background: rgba(255,255,255,0.08);
-
+  background: var(--primary);
   color: white;
-
   transform: rotate(90deg);
 }
-
 .panel-top-row {
   display: flex;
   justify-content: space-between;
@@ -1097,14 +1068,13 @@
   font-weight: 800;
   background: transparent;
   border: none;
-  color: var(--text-strong, #fff);
+  color: var(--text-strong);
   resize: none;
   outline: none;
   margin-top: 10px;
   font-family: inherit;
   line-height: 1.2;
 }
-
 .panel-actions {
   display: flex;
   align-items: center;
@@ -1138,26 +1108,19 @@
 }
 
 .status-badge {
-  background: rgba(99,102,241,0.15);
-
-  border: 1px solid rgba(99,102,241,0.25);
-
-  color: #8b93ff;
-
+  background: rgba(99, 102, 241, 0.1);
+  border: 1px solid var(--primary);
+  color: var(--primary);
   padding: 10px 18px;
-
   border-radius: 14px;
-
   font-size: 0.95rem;
   font-weight: 700;
-
-  backdrop-filter: blur(10px);
 }
 
 .panel-divider {
   margin: 30px 0;
   border: 0;
-  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  border-top: 1px solid var(--border);
 }
 
 /* 7. Descrição */
@@ -1166,7 +1129,7 @@
   min-height: 300px;
   background: transparent;
   border: none;
-  color: var(--text-strong, #d1d5db);
+  color: var(--text-soft); /* Tom mais suave para a descrição */
   font-size: 1.1rem;
   line-height: 1.6;
   resize: none;
@@ -1178,11 +1141,8 @@
 /* 8. Rodapé */
 .panel-footer {
   padding: 22px 32px;
-
-  border-top: 1px solid rgba(255,255,255,0.06);
-
-  color: #9ca3af;
-
+  border-top: 1px solid var(--border);
+  color: var(--text-soft);
   font-size: 0.9rem;
 }
 

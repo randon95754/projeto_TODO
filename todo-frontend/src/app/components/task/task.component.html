@@ -214,20 +214,13 @@
         <p>Área em desenvolvimento</p>
       </div>
 
-      <div class="side-panel-overlay" *ngIf="selectedTask" (click)="closeDetails()">
-
-  <!-- SIDE PANEL -->
+     <div class="side-panel-overlay" *ngIf="selectedTask" (click)="closeDetails()">
   <div class="side-panel" (click)="$event.stopPropagation()">
-
-    <!-- HEADER -->
     <header class="panel-header">
       <button class="close-btn-side" (click)="closeDetails()">✕</button>
     </header>
 
-    <!-- CONTEÚDO PRINCIPAL -->
     <div class="panel-content">
-
-      <!-- TOPO: TÍTULO E AÇÕES -->
       <div class="panel-top-row">
         <textarea class="title-textarea" 
                   [(ngModel)]="selectedTask.title" 
@@ -247,10 +240,7 @@
         </div>
       </div>
 
-      <!-- SEÇÃO PRAZO -->
       <div class="deadline-section">
-        
-        <!-- TOGGLE PRAZO: Vinculado à propriedade da tarefa -->
         <label class="deadline-toggle-container">
           <input type="checkbox" 
                  [(ngModel)]="selectedTask.hasDeadline" 
@@ -259,9 +249,7 @@
           <span class="switch-label-text">Adicionar prazo</span>
         </label>
 
-        <!-- INPUTS DATA/HORA: Aparecem se hasDeadline for true -->
         <div class="deadline-inline-inputs" *ngIf="selectedTask.hasDeadline">
-          
           <div class="field-box">
             <label>DATA</label>
             <input type="date" 
@@ -277,18 +265,16 @@
           </div>
         </div>
 
-        <!-- INDICADOR DE PRAZO ATUAL (Visual) -->
         <div class="current-deadline" *ngIf="selectedTask.hasDeadline && selectedTask.dueDate">
           <span class="deadline-label">Prazo definido para:</span>
           <span class="deadline-date">
-            {{ selectedTask.dueDate | date:'dd MMM, HH:mm' }}
+            {{ selectedTask.dueDate | date:'dd MMM, HH:mm' }} 
           </span>
         </div>
       </div>
 
       <hr class="panel-divider">
 
-      <!-- DESCRIÇÃO -->
       <div class="description-section">
         <label class="description-label">Descrição</label>
         <textarea class="description-textarea" 
@@ -299,13 +285,12 @@
       </div>
     </div>
 
-    <!-- FOOTER -->
     <footer class="panel-footer">
-      <p>Criado em {{ selectedTask.createdAt | date:'dd/MM/yyyy HH:mm' : 'UTC-3' }}</p>
+      <p>Criado em {{ selectedTask.createdAt | date:'dd/MM/yyyy HH:mm' }}</p>
     </footer>
   </div>
 </div>
 
-    </div>
+    </div> 
   </main>
 </div>

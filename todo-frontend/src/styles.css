@@ -1,32 +1,40 @@
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
 
+/* Cores base para o Tema Claro */
+/* =========================================
+   TEMA CLARO (PADRÃO)
+   ========================================= */
 :root {
-  /* LIGHT THEME */
   --bg: #f8fafc;
-  --bg-gradient: radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.05) 0px, transparent 50%),
-                 radial-gradient(at 100% 100%, rgba(45, 212, 191, 0.05) 0px, transparent 50%);
+  --bg-gradient: none;
   --card: #ffffff;
-  --column: rgba(241, 245, 249, 0.6);
-  --text-strong: #0f172a;
+  --column: #f1f5f9;
+  --border: rgba(0, 0, 0, 0.08);
+  --text-strong: #1e293b;
   --text-soft: #64748b;
-  --border: #e2e8f0;
   --primary: #6366f1;
   --primary-hover: #4f46e5;
-  --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
+  --panel-bg: #ffffff;            /* Fundo branco no claro */
+  --shadow-premium: 0 10px 30px rgba(0, 0, 0, 0.08);
+  --sidebar-gradient: linear-gradient(180deg, #f8fafc, #f1f5f9);
 }
 
+/* =========================================
+   TEMA ESCURO (BODY.DARK)
+   ========================================= */
 body.dark {
-  /* DARK THEME (NOTION STYLE) */
-  --bg: #020617;           /* Fundo ultra dark (Slate 950) */
+  --bg: #020617;
   --bg-gradient: radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.1) 0px, transparent 40%);
-  --card: #1e293b;         /* Cards (Slate 800) - mais claros que o fundo */
-  --column: #0f172a;       /* Colunas (Slate 900) - tom intermediário */
-  --text-strong: #f8fafc;  /* Texto quase branco */
-  --text-soft: #94a3b8;    /* Texto secundário cinza azulado */
-  --border: #1e293b;       /* Bordas sutis */
-  --primary: #818cf8;      /* Indigo mais vibrante para brilhar no escuro */
+  --card: #1e293b;
+  --column: #0f172a;
+  --text-strong: #f8fafc;
+  --text-soft: #94a3b8;
+  --border: #1e293b;
+  --primary: #818cf8;
   --primary-hover: #a5b4fc;
-  --shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+  --panel-bg: #1a1c23;            /* Fundo escuro no dark */
+  --shadow-premium: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+  --sidebar-gradient: linear-gradient(180deg, rgba(15, 23, 42, 0.96), rgba(2, 6, 23, 0.98));
 }
 
 * {
