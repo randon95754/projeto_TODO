@@ -1150,3 +1150,466 @@
   from { transform: translateX(100%); }
   to { transform: translateX(0); }
 }
+
+
+
+/* =========================================
+   HOME / INÍCIO
+   ========================================= */
+
+.home-container {
+  display: flex;
+  flex-direction: column;
+
+  gap: 28px;
+
+  width: 100%;
+}
+
+
+/* =========================================
+   WELCOME SECTION
+   ========================================= */
+
+.welcome-section {
+  position: relative;
+
+  overflow: hidden;
+
+  background:
+    linear-gradient(
+      135deg,
+      rgba(99,102,241,0.14),
+      rgba(255,255,255,0.02)
+    );
+
+  border: 1px solid rgba(129,140,248,0.18);
+
+  border-radius: 28px;
+
+  padding: 34px;
+
+  box-shadow:
+    0 10px 30px rgba(99,102,241,0.08);
+
+  transition: all 0.3s ease;
+}
+
+.welcome-section:hover {
+  transform: translateY(-3px);
+
+  border-color: rgba(129,140,248,0.28);
+}
+
+.welcome-section::before {
+  content: "";
+
+  position: absolute;
+
+  top: -120px;
+  right: -120px;
+
+  width: 260px;
+  height: 260px;
+
+  border-radius: 50%;
+
+  background:
+    radial-gradient(
+      circle,
+      rgba(99,102,241,0.18),
+      transparent 70%
+    );
+}
+
+.welcome-section h1 {
+  position: relative;
+
+  font-size: 2.4rem;
+  font-weight: 800;
+
+  color: var(--text-strong);
+
+  margin-bottom: 12px;
+
+  z-index: 1;
+}
+
+.welcome-section p {
+  position: relative;
+
+  font-size: 1rem;
+
+  color: var(--text-soft);
+
+  line-height: 1.6;
+
+  z-index: 1;
+}
+
+
+/* =========================================
+   STATS GRID
+   ========================================= */
+
+.stats-grid {
+  display: grid;
+
+  grid-template-columns: repeat(4, 1fr);
+
+  gap: 22px;
+}
+
+
+/* =========================================
+   STATS CARD
+   ========================================= */
+
+.stat-card {
+  position: relative;
+
+  overflow: hidden;
+
+  background: var(--card);
+
+  border: 1px solid var(--border);
+
+  border-radius: 24px;
+
+  padding: 24px;
+
+  box-shadow: var(--shadow);
+
+  transition: all 0.3s ease;
+}
+
+.stat-card:hover {
+  transform:
+    translateY(-5px)
+    scale(1.01);
+
+  border-color: rgba(129,140,248,0.3);
+}
+
+.stat-card::before {
+  content: "";
+
+  position: absolute;
+
+  top: -40px;
+  right: -40px;
+
+  width: 120px;
+  height: 120px;
+
+  border-radius: 50%;
+
+  background:
+    radial-gradient(
+      circle,
+      rgba(99,102,241,0.10),
+      transparent 70%
+    );
+}
+
+.stat-card .icon {
+  position: relative;
+
+  font-size: 1.6rem;
+
+  margin-bottom: 18px;
+
+  display: inline-flex;
+
+  z-index: 1;
+}
+
+.stat-card h2 {
+  position: relative;
+
+  font-size: 2rem;
+  font-weight: 800;
+
+  color: var(--text-strong);
+
+  margin-bottom: 6px;
+
+  z-index: 1;
+}
+
+.stat-card p {
+  position: relative;
+
+  color: var(--text-soft);
+
+  font-size: 0.92rem;
+
+  z-index: 1;
+}
+
+
+/* =========================================
+   GRID INFERIOR
+   ========================================= */
+
+.bottom-grid {
+  display: grid;
+
+  grid-template-columns: 1fr 1fr;
+
+  gap: 24px;
+}
+
+
+/* =========================================
+   HOME CARDS
+   ========================================= */
+
+.home-card {
+  background: var(--column);
+
+  border: 1px solid var(--border);
+
+  border-radius: 28px;
+
+  padding: 26px;
+
+  box-shadow: var(--shadow);
+
+  transition: all 0.3s ease;
+}
+
+.home-card:hover {
+  border-color: rgba(129,140,248,0.22);
+
+  transform: translateY(-3px);
+}
+
+
+/* =========================================
+   CARD HEADER
+   ========================================= */
+
+.card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  margin-bottom: 22px;
+}
+
+.card-header h2 {
+  font-size: 1.2rem;
+  font-weight: 700;
+
+  color: var(--text-strong);
+}
+
+
+/* =========================================
+   LISTAS
+   ========================================= */
+
+.task-list,
+.agenda-list {
+  display: flex;
+  flex-direction: column;
+
+  gap: 14px;
+}
+
+
+/* =========================================
+   ITEM DE TAREFA
+   ========================================= */
+
+.task-item,
+.agenda-item {
+  background: var(--card);
+
+  border: 1px solid var(--border);
+
+  border-radius: 18px;
+
+  padding: 16px 18px;
+
+  transition: all 0.25s ease;
+}
+
+.task-item:hover,
+.agenda-item:hover {
+  transform: translateX(4px);
+
+  border-color: rgba(129,140,248,0.22);
+}
+
+
+/* =========================================
+   TITULOS
+   ========================================= */
+
+.task-item h3,
+.agenda-item .title {
+  font-size: 0.95rem;
+  font-weight: 700;
+
+  color: var(--text-strong);
+
+  margin-bottom: 6px;
+}
+
+
+/* =========================================
+   DATAS
+   ========================================= */
+
+.task-item p,
+.agenda-item .time {
+  color: var(--text-soft);
+
+  font-size: 0.8rem;
+}
+
+
+/* =========================================
+   AGENDA
+   ========================================= */
+
+.agenda-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+
+/* =========================================
+   RESPONSIVIDADE
+   ========================================= */
+
+@media (max-width: 1100px) {
+
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .bottom-grid {
+    grid-template-columns: 1fr;
+  }
+
+}
+
+@media (max-width: 700px) {
+
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .welcome-section {
+    padding: 26px;
+  }
+
+  .welcome-section h1 {
+    font-size: 1.8rem;
+  }
+
+}
+
+.card-base {
+  position: relative;
+  background: var(--card);
+  padding: 15px;
+  border-radius: 18px;
+  border: 1px solid var(--border);
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* mesmo comportamento do task-card */
+.card-base:hover {
+  transform: scale(1.02) translateY(-5px);
+  border-color: var(--primary);
+}
+.card-base:hover .icon {
+  transform: scale(1.1);
+  transition: 0.2s;
+}
+
+.card-base h2 {
+  font-size: 15px; /* alinhado com task-info h3 */
+  font-weight: 600;
+  color: var(--text-strong);
+  margin: 0;
+}
+
+.card-base p {
+  font-size: 13px;
+  color: var(--text-soft);
+  margin: 0;
+}
+
+.stat-card.card-base {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+}
+
+.stat-card.card-base .icon {
+  font-size: 18px;
+}
+
+/* Ajuste para alinhar título e tempo na mesma linha */
+.title-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  gap: 10px;
+}
+
+.created-at {
+  font-size: 0.75rem !important;
+  color: var(--text-soft);
+  margin-top: 4px;
+  opacity: 0.8;
+}
+
+/* Badge de tempo restante */
+.time-left {
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 12px;
+  background: rgba(99, 102, 241, 0.1);
+  color: var(--primary);
+  white-space: nowrap;
+}
+
+/* Estados do tempo restante (Opcional - se sua função retornar esses status) */
+.time-left.expired {
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+}
+
+.time-left.warning {
+  background: rgba(245, 158, 11, 0.1);
+  color: #f59e0b;
+}
+
+/* Ajuste na task-item para ocupar 100% da largura */
+.task-item, .agenda-item {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.task-info {
+  width: 100%;
+}
+.time-left.continuous {
+  background: rgba(59, 130, 246, 0.1);
+  color: #3b82f6;
+}

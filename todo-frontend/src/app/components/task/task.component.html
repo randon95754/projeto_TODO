@@ -15,11 +15,6 @@
         <span *ngIf="!isSidebarCollapsed">Inicio</span>
       </button>
 
-      <button class="sidebar-item" [class.active]="activeTab === 'dashboard'" (click)="navigateTo('dashboard')">
-        <span class="sidebar-icon">📊</span>
-        <span *ngIf="!isSidebarCollapsed">Dashboard</span>
-      </button>
-
       <button class="sidebar-item" [class.active]="activeTab === 'tarefas'" (click)="navigateTo('tarefas')">
         <span class="sidebar-icon">📝</span>
         <span *ngIf="!isSidebarCollapsed">Tarefas</span>
@@ -28,6 +23,11 @@
       <button class="sidebar-item" [class.active]="activeTab === 'calendario'" (click)="navigateTo('calendario')">
         <span class="sidebar-icon">📅</span>
         <span *ngIf="!isSidebarCollapsed">Calendário</span>
+      </button>
+
+      <button class="sidebar-item" [class.active]="activeTab === 'dashboard'" (click)="navigateTo('dashboard')">
+        <span class="sidebar-icon">📊</span>
+        <span *ngIf="!isSidebarCollapsed">Dashboard</span>
       </button>
 
       <button class="sidebar-item" [class.active]="activeTab === 'estatisticas'" (click)="navigateTo('estatisticas')">
@@ -139,6 +139,121 @@
         </div>
       </ng-container>
 
+     <ng-container *ngIf="activeTab === 'inicio'">
+      <div class="home-container">
+        <header class="header">
+    <h1>Início</h1>
+  </header>
+
+  <!-- Saudação -->
+  <section class="welcome-section">
+    <h1>{{ getGreeting() }}, Usuari@ 👋</h1>
+
+    <p>
+      Você possui {{ pendingTasks.length }} tarefas pendentes
+      e {{ tasksDueToday }} vencendo hoje.
+    </p>
+  </section>
+
+  <!-- Cards -->
+  <section class="stats-grid">
+
+    <div class="stat-card">
+      <span class="icon">📌</span>
+      <h2>{{ pendingTasks.length }}</h2>
+      <p>Pendentes</p>
+    </div>
+
+    <div class="stat-card">
+  <span class="icon">✅</span>
+  <h2>{{ tasksCompletedToday.length }}</h2>
+  <p>Concluídas hoje</p>
+</div>
+
+<div class="stat-card">
+  <span class="icon">⏰</span>
+  <h2>{{ upcomingDeadlines.length }}</h2>
+  <p>Próximas do prazo</p>
+</div>
+
+    <div class="stat-card">
+      <span class="icon">📊</span>
+      <h2>{{ productivity }}%</h2>
+      <p>Produtividade</p>
+    </div>
+
+  </section>
+
+  <!-- Parte inferior -->
+  <section class="bottom-grid">
+
+    <!-- Próximas tarefas -->
+    <section class="home-card">
+  <div class="card-header">
+    <h2>Próximas tarefas</h2>
+  </div>
+
+  <div class="task-list">
+    <div class="task-item" *ngFor="let task of upcomingDeadlines">
+      <div class="task-info">
+        <div class="title-row">
+          <h3>{{ task.title }}</h3>
+          <span
+  class="time-left"
+  *ngIf="task.hasDeadline"
+  [ngClass]="getDeadlineStatus(task)"
+>
+  {{ formatDaysRemainingOnly(task) }}
+</span>
+        </div>
+        <p class="created-at">Criada em: {{ task.createdAt | date:'dd/MM/yy' }}</p>
+      </div>
+    </div>
+    
+    <p *ngIf="upcomingDeadlines.length === 0" class="empty-msg">
+      Nenhuma tarefa para os próximos 3 dias.
+    </p>
+  </div>
+</section>
+
+    <!-- Agenda do dia -->
+   <section class="home-card">
+  <div class="card-header">
+    <h2>Agenda do dia</h2>
+  </div>
+
+  <div class="agenda-list">
+    <div class="agenda-item" *ngFor="let task of dailyAgenda">
+      <div class="task-info">
+        <div class="title-row">
+          <span class="title">{{ task.title }}</span>
+          <span
+  class="time-left"
+  [ngClass]="getDeadlineStatus(task)"
+>
+  {{ formatDaysRemainingOnly(task) }}
+</span>
+        </div>
+        <p class="created-at">Criada em: {{ task.createdAt | date:'dd/MM/yy' }}</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+  </section>
+        
+
+      </div>
+  
+
+    </ng-container>
+
+
+
+
+
+
+
       <ng-container *ngIf="activeTab === 'calendario'">
         <header class="header">
           <h1>Calendário de Atividades</h1>
@@ -209,7 +324,7 @@
         </div>
       </ng-container>
 
-      <div *ngIf="activeTab !== 'tarefas' && activeTab !== 'calendario'" class="dev-area">
+      <div *ngIf="activeTab !== 'tarefas' && activeTab !== 'calendario' && activeTab !== 'inicio'" class="dev-area">
         <h1>{{ activeTab | titlecase }}</h1>
         <p>Área em desenvolvimento</p>
       </div>

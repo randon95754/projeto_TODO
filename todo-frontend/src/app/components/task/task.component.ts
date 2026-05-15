@@ -27,6 +27,13 @@ registerLocaleData(localePt);
 export class TaskComponent implements OnInit {
   private platformId = inject(PLATFORM_ID);
   
+  completedToday: number = 0;
+  upcomingTasks: number = 0;
+  productivity: number = 0;
+
+  todayTasks: Task[] = [];
+  nextTasks: Task[] = [];
+  tasksDueToday: number = 0;
   pendingTasks: Task[] = [];
   doneTasks: Task[] = [];
   newTask: string = '';
@@ -51,6 +58,23 @@ export class TaskComponent implements OnInit {
       if (savedTab) this.activeTab = savedTab;
     }
   }
+
+  getDeadlineStatus(task: any): 'normal' | 'warning' | 'expired' | 'continuous' {
+  if (!task?.dueDate) return 'continuous';
+
+  const now = new Date();
+  const due = new Date(task.dueDate);
+
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const target = new Date(due.getFullYear(), due.getMonth(), due.getDate());
+
+  const diffTime = target.getTime() - today.getTime();
+  const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24));
+
+  if (diffDays < 0) return 'expired';
+  if (diffDays <= 3) return 'warning';
+  return 'normal';
+}
 
 
   generateCalendar(): void {
@@ -100,22 +124,39 @@ selectDay(day: Date): void {
 }
 
 shouldShowTaskOnDay(task: any, day: Date): boolean {
-  // Zeramos as horas para comparar apenas as datas
+  const now = new Date();
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
   const targetDay = new Date(day.getFullYear(), day.getMonth(), day.getDate()).getTime();
-  
+
   // REGRA 1: Sem prazo -> Aparece em todos os dias
   if (!task.hasDeadline || !task.dueDate) {
     return true;
   }
 
-  // REGRA 2: Com prazo
+  // REGRA 2: Definição de datas importantes
   const start = new Date(task.createdAt);
   const startDate = new Date(start.getFullYear(), start.getMonth(), start.getDate()).getTime();
   
   const end = new Date(task.dueDate);
   const endDate = new Date(end.getFullYear(), end.getMonth(), end.getDate()).getTime();
 
-  // Retorna verdadeiro se o dia do calendário estiver entre o início e o fim (inclusive)
+  // Cálculo de 3 dias antes do vencimento
+  const threeDaysBeforeMS = endDate - (3 * 24 * 60 * 60 * 1000);
+  const threeDaysBeforeDate = new Date(threeDaysBeforeMS);
+  const threeDaysBefore = new Date(threeDaysBeforeDate.getFullYear(), threeDaysBeforeDate.getMonth(), threeDaysBeforeDate.getDate()).getTime();
+
+  // CONDIÇÕES PARA MOSTRAR A BOLINHA:
+  
+  // 1. Mostrar no dia da criação
+  const isCreationDay = targetDay === startDate;
+
+  // 2. Mostrar no dia do vencimento
+  const isDueDate = targetDay === endDate;
+
+  // 3. Mostrar no dia de "3 dias antes", MAS apenas se esse dia ainda não passou em relação a HOJE
+  // E se a tarefa não estiver concluída (opcional, dependendo do seu objeto task)
+  const isThreeDaysAlert = targetDay === threeDaysBefore && targetDay >= today;
+
   return targetDay >= startDate && targetDay <= endDate;
 }
 
@@ -129,6 +170,10 @@ hasTasksOnDay(day: Date): boolean {
   target.setHours(0, 0, 0, 0);
   const targetTime = target.getTime();
 
+  const now = new Date();
+  now.setHours(0, 0, 0, 0);
+  const todayTime = now.getTime();
+
   return [...this.pendingTasks, ...this.doneTasks].some(task => {
     if (!task.createdAt) return false;
 
@@ -136,34 +181,26 @@ hasTasksOnDay(day: Date): boolean {
     createdAt.setHours(0, 0, 0, 0);
     const creationTime = createdAt.getTime();
 
-    // 1) SEMPRE MOSTRAR NO DIA DA CRIAÇÃO (Histórico)
-    if (creationTime === targetTime) {
-      return true;
-    }
+    // 1) PONTO FIXO: Dia da Criação (Sempre mostra)
+    if (creationTime === targetTime) return true;
 
-    // 2) TAREFAS COM PRAZO
     if (task.hasDeadline && task.dueDate) {
       const dueDate = new Date(task.dueDate);
       dueDate.setHours(0, 0, 0, 0);
       const dueTime = dueDate.getTime();
 
-      // DIA DO VENCIMENTO: Sempre mostra a bolinha no dia que expirou/expira
-      if (dueTime === targetTime) {
+      // 2) PONTO FIXO: Dia do Vencimento (Sempre mostra)
+      if (dueTime === targetTime) return true;
+
+      // 3) PONTO DINÂMICO: Alerta de 3 dias
+      const warningDate = new Date(dueDate);
+      warningDate.setDate(warningDate.getDate() - 3);
+      warningDate.setHours(0, 0, 0, 0);
+      const warningTime = warningDate.getTime();
+
+      // Mostra a bolinha apenas se for o dia do aviso E o dia for hoje ou futuro
+      if (targetTime === warningTime && targetTime >= todayTime) {
         return true;
-      }
-
-      // LÓGICA DE AVISO (3 dias antes):
-      // Só mostra se o dia atual do calendário (targetTime) NÃO ultrapassou o vencimento
-      if (targetTime < dueTime) {
-        const warningDate = new Date(dueDate);
-        warningDate.setDate(warningDate.getDate() - 3);
-        warningDate.setHours(0, 0, 0, 0);
-        const warningTime = warningDate.getTime();
-
-        // Se o dia for o dia do aviso, retorna true
-        if (targetTime === warningTime) {
-          return true;
-        }
       }
     }
 
@@ -223,6 +260,7 @@ get tasksForSelectedDay() {
       this.loadTasks();
     }
   }
+  this.updateTasksDueToday();
 }
 
   // --- NAVEGAÇÃO ---
@@ -277,6 +315,8 @@ get tasksForSelectedDay() {
       }
     });
   }
+
+  
 
 addTask(event?: Event): void {
   if (event) {
@@ -371,17 +411,19 @@ updateTaskTime(event: any) {
 }
 
   toggleTask(task: Task) {
-    task.completed = !task.completed;
-    if (task.completed) {
-      this.pendingTasks = this.pendingTasks.filter(t => t.id !== task.id);
-      this.doneTasks.unshift(task);
-    } else {
-      this.doneTasks = this.doneTasks.filter(t => t.id !== task.id);
-      this.pendingTasks.unshift(task);
-      this.pendingTasks = this.sortByPriority(this.pendingTasks);
-    }
-    this.saveTasks();
+  task.completed = !task.completed;
+  if (task.completed) {
+    task.completedAt = new Date(); // Registra o momento da conclusão
+    this.pendingTasks = this.pendingTasks.filter(t => t.id !== task.id);
+    this.doneTasks.unshift(task);
+  } else {
+    task.completedAt = undefined; // Remove a data se desmarcar
+    this.doneTasks = this.doneTasks.filter(t => t.id !== task.id);
+    this.pendingTasks.unshift(task);
+    this.pendingTasks = this.sortByPriority(this.pendingTasks);
   }
+  this.saveTasks();
+}
 
   deleteTask(id: number): void {
     this.pendingTasks = this.pendingTasks.filter(t => t.id !== id);
@@ -408,17 +450,48 @@ updateTaskTime(event: any) {
     const due = new Date(task.dueDate).getTime();
     const diff = due - now;
 
+    // Caso já tenha passado do prazo
     if (diff <= 0) return { text: '⏰ Expirado', status: 'expired' };
 
     const days = Math.floor(diff / (1000 * 60 * 60 * 24));
     const hours = Math.floor((diff % 86400000) / (1000 * 60 * 60));
     const minutes = Math.floor((diff % 3600000) / (1000 * 60));
 
-    let text = days > 0 ? `${days}d ${hours}h` : hours > 0 ? `${hours}h ${minutes}min` : `${minutes}min`;
+    // Montagem do texto dinâmico
+    let text = '';
+    if (days > 0) {
+      text = `${days} dias ${hours}h`;
+    } else if (hours > 0) {
+      text = `${hours}h ${minutes}min`;
+    } else {
+      text = `${minutes}min`;
+    }
+
+    // Lógica de status: warning se faltar menos de 3 dias
     const status = days < 3 ? 'warning' : 'normal';
     
     return { text, status };
-  }
+}
+
+formatDaysRemainingOnly(task: any): string {
+  if (!task?.dueDate) return 'contínua';
+
+  const now = new Date();
+  const due = new Date(task.dueDate);
+
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const target = new Date(due.getFullYear(), due.getMonth(), due.getDate());
+
+  const diffTime = target.getTime() - today.getTime();
+  const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24));
+
+  if (diffDays < 0) return 'expirado';
+  if (diffDays === 0) return 'hoje';
+  if (diffDays === 1) return '1 dia';
+  if (diffDays === 2) return '2 dias';
+
+  return `${diffDays} dias`;
+}
 
   private sortByPriority(tasks: Task[]): Task[] {
     return [...tasks].sort((a, b) => {
@@ -467,4 +540,142 @@ closeDetails() {
   }
   this.selectedTask = null;
 }
+
+getGreeting(): string {
+  const hour = new Date().getHours();
+
+  if (hour < 12) return 'Bom dia';
+  if (hour < 18) return 'Boa tarde';
+
+  return 'Boa noite';
+}
+
+updateTasksDueToday() {
+
+  const today = new Date();
+
+  this.tasksDueToday = this.pendingTasks.filter((task: Task) => {
+
+    if (!task.dueDate) return false;
+
+    const dueDate = new Date(task.dueDate);
+
+    return (
+      dueDate.getDate() === today.getDate() &&
+      dueDate.getMonth() === today.getMonth() &&
+      dueDate.getFullYear() === today.getFullYear()
+    );
+
+  }).length;
+
+}
+
+
+// --- NOVAS LÓGICAS DE FILTRO ---
+
+// 1. Tarefas concluídas HOJE (independente de quando foram criadas)
+get tasksCompletedToday(): Task[] {
+  const today = new Date();
+  return this.doneTasks.filter(task => {
+    if (!task.completedAt) return false;
+    const completionDate = new Date(task.completedAt);
+    return completionDate.toDateString() === today.toDateString();
+  });
+}
+
+// 2. Coluna Próximas Tarefas (Faltam 3 dias ou menos para encerrar)
+get upcomingDeadlines(): Task[] {
+  const now = new Date();
+  const sevenDaysFromNow = new Date();
+  sevenDaysFromNow.setDate(now.getDate() + 7);
+
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
+  return this.pendingTasks
+    .filter(task => {
+      if (!task.hasDeadline || !task.dueDate) return false;
+
+      const dueDate = new Date(task.dueDate);
+      const due = new Date(dueDate.getFullYear(), dueDate.getMonth(), dueDate.getDate());
+
+      // EXCLUI hoje (vai pra agenda do dia)
+      if (due.getTime() === today.getTime()) return false;
+
+      // somente próximos 7 dias
+      return due > today && due <= sevenDaysFromNow;
+    })
+    .sort((a, b) =>
+      new Date(a.dueDate!).getTime() - new Date(b.dueDate!).getTime()
+    );
+}
+
+// 3. Coluna Agenda do Dia (Com a hierarquia solicitada)
+get dailyAgenda(): Task[] {
+  const now = new Date();
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
+  return this.pendingTasks
+    .filter(task => {
+      // SEM PRAZO → sempre entra
+      if (!task.hasDeadline || !task.dueDate) return true;
+
+      const due = new Date(task.dueDate);
+      const dueDate = new Date(due.getFullYear(), due.getMonth(), due.getDate());
+
+      // ENTRA SE:
+      // - é hoje
+      // - OU está expirada
+      return (
+        dueDate.getTime() <= today.getTime()
+      );
+    })
+    .sort((a, b) => {
+      const getPriority = (t: Task) => {
+        if (!t.hasDeadline || !t.dueDate) return 3; // sem prazo
+
+        const due = new Date(t.dueDate);
+        const d = new Date(due.getFullYear(), due.getMonth(), due.getDate());
+
+        const isExpired = d.getTime() < today.getTime();
+        const isToday = d.getTime() === today.getTime();
+        
+
+        if (isExpired) return 0; // 🔴 prioridade máxima
+        if (isToday) return 1;   // 🟡 hoje
+        return 2;
+      };
+
+      return getPriority(a) - getPriority(b);
+    });
+}
+
+isTodayAgenda(task: any): boolean {
+  const now = new Date();
+
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
+  // Sem prazo → entra na agenda do dia
+  if (!task?.hasDeadline || !task?.dueDate) return true;
+
+  const due = new Date(task.dueDate);
+  const target = new Date(due.getFullYear(), due.getMonth(), due.getDate());
+
+  return target.getTime() === today.getTime();
+}
+
+isUpcomingTask(task: any): boolean {
+  if (!task?.hasDeadline || !task?.dueDate) return false;
+
+  const now = new Date();
+  const due = new Date(task.dueDate);
+
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const target = new Date(due.getFullYear(), due.getMonth(), due.getDate());
+
+  const diffTime = target.getTime() - today.getTime();
+  const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24));
+
+  return diffDays > 0 && diffDays <= 7;
+}
+
 }
