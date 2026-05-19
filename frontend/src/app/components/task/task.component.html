@@ -1,82 +1,225 @@
 <div class="app-layout">
+  <!-- Barra Lateral (Sidebar) -->
   <aside class="sidebar" [class.collapsed]="isSidebarCollapsed">
     <div class="sidebar-top">
       <div class="sidebar-logo">
         <h2 *ngIf="!isSidebarCollapsed">MENU</h2>
       </div>
-      <button class="collapse-btn" (click)="toggleSidebar()">
-        ☰
-      </button>
+      <button class="collapse-btn" (click)="toggleSidebar()">☰</button>
     </div>
 
     <nav class="sidebar-menu">
-      <button class="sidebar-item" [class.active]="activeTab === 'inicio'" (click)="navigateTo('inicio')">
+      <button
+        class="sidebar-item"
+        [class.active]="activeTab === 'inicio'"
+        (click)="navigateTo('inicio')"
+      >
         <span class="sidebar-icon">🏠</span>
-        <span *ngIf="!isSidebarCollapsed">Inicio</span>
+        <span *ngIf="!isSidebarCollapsed">Início</span>
       </button>
 
-      <button class="sidebar-item" [class.active]="activeTab === 'tarefas'" (click)="navigateTo('tarefas')">
+      <button
+        class="sidebar-item"
+        [class.active]="activeTab === 'tarefas'"
+        (click)="navigateTo('tarefas')"
+      >
         <span class="sidebar-icon">📝</span>
         <span *ngIf="!isSidebarCollapsed">Tarefas</span>
       </button>
 
-      <button class="sidebar-item" [class.active]="activeTab === 'calendario'" (click)="navigateTo('calendario')">
+      <button
+        class="sidebar-item"
+        [class.active]="activeTab === 'calendario'"
+        (click)="navigateTo('calendario')"
+      >
         <span class="sidebar-icon">📅</span>
         <span *ngIf="!isSidebarCollapsed">Calendário</span>
       </button>
 
-      <button class="sidebar-item" [class.active]="activeTab === 'dashboard'" (click)="navigateTo('dashboard')">
+      <button
+        class="sidebar-item"
+        [class.active]="activeTab === 'dashboard'"
+        (click)="navigateTo('dashboard')"
+      >
         <span class="sidebar-icon">📊</span>
         <span *ngIf="!isSidebarCollapsed">Dashboard</span>
       </button>
 
-      <button class="sidebar-item" [class.active]="activeTab === 'estatisticas'" (click)="navigateTo('estatisticas')">
+      <button
+        class="sidebar-item"
+        [class.active]="activeTab === 'estatisticas'"
+        (click)="navigateTo('estatisticas')"
+      >
         <span class="sidebar-icon">📈</span>
         <span *ngIf="!isSidebarCollapsed">Estatísticas</span>
       </button>
 
-      <button class="sidebar-item" [class.active]="activeTab === 'configuracoes'" (click)="navigateTo('configuracoes')">
+      <button
+        class="sidebar-item"
+        [class.active]="activeTab === 'configuracoes'"
+        (click)="navigateTo('configuracoes')"
+      >
         <span class="sidebar-icon">⚙️</span>
         <span *ngIf="!isSidebarCollapsed">Configurações</span>
       </button>
     </nav>
   </aside>
 
+  <!-- Conteúdo Principal -->
   <main class="main-content">
     <div class="container">
+      <!-- Botão de Alternar Tema -->
       <button class="theme-btn" (click)="toggleTheme()" title="Alternar Tema">
         <span>🌓</span>
       </button>
 
+      <!-- ABA: INÍCIO -->
+      <ng-container *ngIf="activeTab === 'inicio'">
+        <div class="home-container">
+          <header class="header">
+            <h1>Início</h1>
+          </header>
+
+          <!-- Saudação e Resumo -->
+          <section class="welcome-section">
+            <h1>{{ getGreeting() }}, Usuari@ 👋</h1>
+            <p>
+              Você possui {{ pendingTasks.length }} tarefas pendentes e {{ tasksDueToday }} vencendo
+              hoje.
+            </p>
+          </section>
+
+          <!-- Grid de Estatísticas -->
+          <section class="stats-grid">
+            <div class="stat-card">
+              <span class="icon">📌</span>
+              <h2>{{ pendingTasks.length }}</h2>
+              <p>Pendentes</p>
+            </div>
+
+            <div class="stat-card">
+              <span class="icon">✅</span>
+              <h2>{{ tasksCompletedToday.length }}</h2>
+              <p>Concluídas hoje</p>
+            </div>
+
+            <div class="stat-card">
+              <span class="icon">⏰</span>
+              <h2>{{ upcomingDeadlines.length }}</h2>
+              <p>Próximas do prazo</p>
+            </div>
+
+            <div class="stat-card">
+              <span class="icon">📊</span>
+              <h2>{{ productivity }}%</h2>
+              <p>Produtividade</p>
+            </div>
+          </section>
+
+          <!-- Grid Inferior (Próximas Tarefas e Agenda) -->
+          <section class="bottom-grid">
+            <!-- Próximas Tarefas -->
+            <section class="home-card">
+              <div class="card-header">
+                <h2>Próximas tarefas</h2>
+              </div>
+
+              <div class="task-list">
+                <div class="task-item" *ngFor="let task of upcomingDeadlines">
+                  <div class="task-info">
+                    <div class="title-row">
+                      <h3>{{ task.title }}</h3>
+                      <span
+                        class="time-left"
+                        *ngIf="task.hasDeadline"
+                        [ngClass]="getDeadlineStatus(task)"
+                      >
+                        {{ formatDaysRemainingOnly(task) }}
+                      </span>
+                    </div>
+                    <p class="created-at">Criada em: {{ task.createdAt | date: 'dd/MM/yy' }}</p>
+                  </div>
+                </div>
+                <p *ngIf="upcomingDeadlines.length === 0" class="empty-msg">
+                  Nenhuma tarefa para os próximos 3 dias.
+                </p>
+              </div>
+            </section>
+
+            <!-- Agenda do Dia -->
+            <section class="home-card">
+              <div class="card-header">
+                <h2>Agenda do dia</h2>
+              </div>
+
+              <div class="agenda-list">
+                <div class="agenda-item" *ngFor="let task of dailyAgenda">
+                  <div class="task-info">
+                    <div class="title-row">
+                      <span class="title">{{ task.title }}</span>
+                      <span class="time-left" [ngClass]="getDeadlineStatus(task)">
+                        {{ formatDaysRemainingOnly(task) }}
+                      </span>
+                    </div>
+                    <p class="created-at">Criada em: {{ task.createdAt | date: 'dd/MM/yy' }}</p>
+                  </div>
+                </div>
+              </div>
+            </section>
+          </section>
+        </div>
+      </ng-container>
+
+      <!-- ABA: TAREFAS (KANBAN) -->
       <ng-container *ngIf="activeTab === 'tarefas'">
         <header class="header">
           <h1>Registro de Tarefas</h1>
           <p>Gerencie sua rotina com simplicidade e agilidade</p>
         </header>
 
+        <!-- Formulário de Nova Tarefa -->
         <form class="task-form" (ngSubmit)="addTask($event)">
-  <div class="input-group">
-    <input type="text" [(ngModel)]="newTask" name="newTask" placeholder="O que precisa ser feito?" required />
-    
-    <button type="submit" class="add-btn">
-      <span>+</span>
-    </button>
-  </div>
-</form>
+          <div class="input-group">
+            <input
+              type="text"
+              [(ngModel)]="newTask"
+              name="newTask"
+              placeholder="O que precisa ser feito?"
+              required
+            />
 
+            <button type="submit" class="add-btn">
+              <span>+</span>
+            </button>
+          </div>
+        </form>
+
+        <!-- Quadro (Board) Drag and Drop -->
         <div class="board" cdkDropListGroup>
+          <!-- Coluna: Pendentes -->
           <section class="column">
             <div class="column-header pending">
               <h2><span class="dot"></span> Pendentes</h2>
               <span class="count-badge">{{ pendingTasks.length }}</span>
             </div>
 
-            <div class="task-list" cdkDropList [cdkDropListData]="pendingTasks" (cdkDropListDropped)="drop($event)" id="list-pending">
+            <div
+              class="task-list"
+              cdkDropList
+              [cdkDropListData]="pendingTasks"
+              (cdkDropListDropped)="drop($event)"
+              id="list-pending"
+            >
               <div class="empty-state" *ngIf="pendingTasks.length === 0">
                 <p>🛋️ Nada pendente. Hora de relaxar!</p>
               </div>
 
-              <article class="task-card" *ngFor="let task of pendingTasks" cdkDrag (click)="openTaskDetails(task)">
+              <article
+                class="task-card"
+                *ngFor="let task of pendingTasks"
+                cdkDrag
+                (click)="openTaskDetails(task)"
+              >
                 <div class="task-content">
                   <label class="checkbox-container" (click)="$event.stopPropagation()">
                     <input type="checkbox" [checked]="task.completed" (change)="toggleTask(task)" />
@@ -84,19 +227,34 @@
                   </label>
 
                   <div class="task-info">
-                    <input *ngIf="task.editing" class="edit-input" [(ngModel)]="task.title" (blur)="task.editing = false" (keyup.enter)="task.editing = false" (click)="$event.stopPropagation()" autofocus />
+                    <input
+                      *ngIf="task.editing"
+                      class="edit-input"
+                      [(ngModel)]="task.title"
+                      (blur)="task.editing = false"
+                      (keyup.enter)="task.editing = false"
+                      (click)="$event.stopPropagation()"
+                      autofocus
+                    />
+
                     <h3 *ngIf="!task.editing">
-                      {{ task.title }} 
-                      <span class="date-created">📅 {{ task.createdAt | date:'dd MMM, HH:mm' : 'UTC-3' }}</span>
+                      {{ task.title }}
+                      <span class="date-created"
+                        >📅 {{ task.createdAt | date: 'dd MMM, HH:mm' : 'UTC-3' }}</span
+                      >
                       <span *ngIf="task.description" class="desc-indicator">📝</span>
                     </h3>
-                    
+
                     <div class="task-dates" *ngIf="task.hasDeadline">
-                      <span class="date-due">⏰ {{ task.dueDate | date:'dd MMM, HH:mm' : 'UTC-3' }}</span>
-                      <span class="time-left" 
-                            [class.time-normal]="getTimeRemaining(task).status === 'normal'"
-                            [class.time-warning]="getTimeRemaining(task).status === 'warning'"
-                            [class.time-expired]="getTimeRemaining(task).status === 'expired'">
+                      <span class="date-due"
+                        >⏰ {{ task.dueDate | date: 'dd MMM, HH:mm' : 'UTC-3' }}</span
+                      >
+                      <span
+                        class="time-left"
+                        [class.time-normal]="getTimeRemaining(task).status === 'normal'"
+                        [class.time-warning]="getTimeRemaining(task).status === 'warning'"
+                        [class.time-expired]="getTimeRemaining(task).status === 'expired'"
+                      >
                         {{ getTimeRemaining(task).text }}
                       </span>
                     </div>
@@ -111,152 +269,61 @@
             </div>
           </section>
 
+          <!-- Coluna: Concluídas -->
           <section class="column">
             <div class="column-header done">
               <h2><span class="dot"></span> Concluídas</h2>
               <span class="count-badge">{{ doneTasks.length }}</span>
             </div>
 
-            <div class="task-list" cdkDropList [cdkDropListData]="doneTasks" (cdkDropListDropped)="drop($event)" id="list-done">
+            <div
+              class="task-list"
+              cdkDropList
+              [cdkDropListData]="doneTasks"
+              (cdkDropListDropped)="drop($event)"
+              id="list-done"
+            >
               <div class="empty-state" *ngIf="doneTasks.length === 0">
                 <p>🚀 Conclua algo para ver aqui!</p>
               </div>
 
-              <article class="task-card task-done" *ngFor="let task of doneTasks" cdkDrag (click)="openTaskDetails(task)">
+              <article
+                class="task-card task-done"
+                *ngFor="let task of doneTasks"
+                cdkDrag
+                (click)="openTaskDetails(task)"
+              >
                 <div class="task-content">
                   <label class="checkbox-container" (click)="$event.stopPropagation()">
                     <input type="checkbox" checked (change)="toggleTask(task)" />
                     <span class="checkmark"></span>
                   </label>
                   <div class="task-info">
-                    <h3>{{ task.title }} <span *ngIf="task.description" class="desc-indicator">📝</span></h3>
+                    <h3>
+                      {{ task.title }}
+                      <span *ngIf="task.description" class="desc-indicator">📝</span>
+                    </h3>
                     <div class="task-meta">
-                      <span class="task-date">📅 {{ task.createdAt | date:'dd MMM, HH:mm' : '-0300' }}</span>
+                      <span class="task-date"
+                        >📅 {{ task.createdAt | date: 'dd MMM, HH:mm' : '-0300' }}</span
+                      >
                     </div>
                   </div>
                 </div>
-                <button class="btn-icon delete" (click)="deleteTask(task.id!)" (click)="$event.stopPropagation()">🗑️</button>
+                <button
+                  class="btn-icon delete"
+                  (click)="deleteTask(task.id!)"
+                  (click)="$event.stopPropagation()"
+                >
+                  🗑️
+                </button>
               </article>
             </div>
           </section>
         </div>
       </ng-container>
 
-     <ng-container *ngIf="activeTab === 'inicio'">
-      <div class="home-container">
-        <header class="header">
-    <h1>Início</h1>
-  </header>
-
-  <!-- Saudação -->
-  <section class="welcome-section">
-    <h1>{{ getGreeting() }}, Usuari@ 👋</h1>
-
-    <p>
-      Você possui {{ pendingTasks.length }} tarefas pendentes
-      e {{ tasksDueToday }} vencendo hoje.
-    </p>
-  </section>
-
-  <!-- Cards -->
-  <section class="stats-grid">
-
-    <div class="stat-card">
-      <span class="icon">📌</span>
-      <h2>{{ pendingTasks.length }}</h2>
-      <p>Pendentes</p>
-    </div>
-
-    <div class="stat-card">
-  <span class="icon">✅</span>
-  <h2>{{ tasksCompletedToday.length }}</h2>
-  <p>Concluídas hoje</p>
-</div>
-
-<div class="stat-card">
-  <span class="icon">⏰</span>
-  <h2>{{ upcomingDeadlines.length }}</h2>
-  <p>Próximas do prazo</p>
-</div>
-
-    <div class="stat-card">
-      <span class="icon">📊</span>
-      <h2>{{ productivity }}%</h2>
-      <p>Produtividade</p>
-    </div>
-
-  </section>
-
-  <!-- Parte inferior -->
-  <section class="bottom-grid">
-
-    <!-- Próximas tarefas -->
-    <section class="home-card">
-  <div class="card-header">
-    <h2>Próximas tarefas</h2>
-  </div>
-
-  <div class="task-list">
-    <div class="task-item" *ngFor="let task of upcomingDeadlines">
-      <div class="task-info">
-        <div class="title-row">
-          <h3>{{ task.title }}</h3>
-          <span
-  class="time-left"
-  *ngIf="task.hasDeadline"
-  [ngClass]="getDeadlineStatus(task)"
->
-  {{ formatDaysRemainingOnly(task) }}
-</span>
-        </div>
-        <p class="created-at">Criada em: {{ task.createdAt | date:'dd/MM/yy' }}</p>
-      </div>
-    </div>
-    
-    <p *ngIf="upcomingDeadlines.length === 0" class="empty-msg">
-      Nenhuma tarefa para os próximos 3 dias.
-    </p>
-  </div>
-</section>
-
-    <!-- Agenda do dia -->
-   <section class="home-card">
-  <div class="card-header">
-    <h2>Agenda do dia</h2>
-  </div>
-
-  <div class="agenda-list">
-    <div class="agenda-item" *ngFor="let task of dailyAgenda">
-      <div class="task-info">
-        <div class="title-row">
-          <span class="title">{{ task.title }}</span>
-          <span
-  class="time-left"
-  [ngClass]="getDeadlineStatus(task)"
->
-  {{ formatDaysRemainingOnly(task) }}
-</span>
-        </div>
-        <p class="created-at">Criada em: {{ task.createdAt | date:'dd/MM/yy' }}</p>
-      </div>
-    </div>
-  </div>
-</section>
-
-  </section>
-        
-
-      </div>
-  
-
-    </ng-container>
-
-
-
-
-
-
-
+      <!-- ABA: CALENDÁRIO -->
       <ng-container *ngIf="activeTab === 'calendario'">
         <header class="header">
           <h1>Calendário de Atividades</h1>
@@ -264,58 +331,90 @@
         </header>
 
         <div class="calendar-layout" [class.has-selection]="isDaySelected">
+          <!-- Grade do Calendário -->
           <section class="calendar-card card-pattern">
             <div class="calendar-header">
               <button type="button" class="nav-arrow" (click)="prevMonth()"><span>◀</span></button>
-              <h2 class="month-title">{{ viewDate | date:'MMMM yyyy' }}</h2>
+              <h2 class="month-title">{{ viewDate | date: 'MMMM yyyy' }}</h2>
               <button type="button" class="nav-arrow" (click)="nextMonth()"><span>▶</span></button>
             </div>
+
             <div class="calendar-grid">
-              <div class="weekday" *ngFor="let d of ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb']">{{ d }}</div>
-              <div *ngFor="let day of calendarDays" 
-                   class="calendar-day"
-                   [class.empty]="!day"
-                   [class.selected]="day && isSelected(day)"
-                   (click)="day && selectDay(day)">
+              <div
+                class="weekday"
+                *ngFor="let d of ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb']"
+              >
+                {{ d }}
+              </div>
+              <div
+                *ngFor="let day of calendarDays"
+                class="calendar-day"
+                [class.empty]="!day"
+                [class.selected]="day && isSelected(day)"
+                (click)="day && selectDay(day)"
+              >
                 <span *ngIf="day" class="day-number">{{ day.getDate() }}</span>
                 <span class="task-dot" *ngIf="day && hasTasksOnDay(day)"></span>
               </div>
             </div>
           </section>
 
+          <!-- Painel Lateral de Tarefas do Dia Selecionado -->
           <div class="tasks-side-container" *ngIf="isDaySelected">
+            <!-- Prazos do Dia -->
             <section class="day-tasks-section card-pattern">
               <div class="column-header">
-                <h2 class="month-title" style="font-size: 1.1rem;">Prazos: {{ selectedDate | date:'dd/MM' }}</h2>
-                <span class="count-badge" *ngIf="deadlineTasks.length > 0">{{ deadlineTasks.length }}</span>
+                <h2 class="month-title" style="font-size: 1.1rem">
+                  Prazos: {{ selectedDate | date: 'dd/MM' }}
+                </h2>
+                <span class="count-badge" *ngIf="deadlineTasks.length > 0">{{
+                  deadlineTasks.length
+                }}</span>
               </div>
               <div class="task-list">
                 <div class="empty-state" *ngIf="deadlineTasks.length === 0">
                   <p>🎉 Sem prazos para hoje!</p>
                 </div>
-                <article class="mini-task-card" *ngFor="let task of deadlineTasks" (click)="openTaskDetails(task)">
+                <article
+                  class="mini-task-card"
+                  *ngFor="let task of deadlineTasks"
+                  (click)="openTaskDetails(task)"
+                >
                   <div class="task-info">
-                    <h3>{{ task.title }} <span *ngIf="task.description" style="font-size: 0.7rem;">📝</span></h3>
+                    <h3>
+                      {{ task.title }}
+                      <span *ngIf="task.description" style="font-size: 0.7rem">📝</span>
+                    </h3>
                     <div class="task-meta">
-                      <span class="time">⏰ Expira: {{ task.dueDate | date:'dd/MM HH:mm' }}</span>
+                      <span class="time">⏰ Expira: {{ task.dueDate | date: 'dd/MM HH:mm' }}</span>
                     </div>
                   </div>
                 </article>
               </div>
             </section>
 
+            <!-- Tarefas Contínuas -->
             <section class="day-tasks-section card-pattern">
               <div class="column-header">
-                <h2 class="month-title" style="font-size: 1.1rem;">Tarefas Contínuas</h2>
-                <span class="count-badge" *ngIf="continuousTasks.length > 0">{{ continuousTasks.length }}</span>
+                <h2 class="month-title" style="font-size: 1.1rem">Tarefas Contínuas</h2>
+                <span class="count-badge" *ngIf="continuousTasks.length > 0">{{
+                  continuousTasks.length
+                }}</span>
               </div>
               <div class="task-list">
                 <div class="empty-state" *ngIf="continuousTasks.length === 0">
                   <p>🔄 Nenhuma rotina ativa.</p>
                 </div>
-                <article class="mini-task-card continuous" *ngFor="let task of continuousTasks" (click)="openTaskDetails(task)">
+                <article
+                  class="mini-task-card continuous"
+                  *ngFor="let task of continuousTasks"
+                  (click)="openTaskDetails(task)"
+                >
                   <div class="task-info">
-                    <h3>{{ task.title }} <span *ngIf="task.description" style="font-size: 0.7rem;">📝</span></h3>
+                    <h3>
+                      {{ task.title }}
+                      <span *ngIf="task.description" style="font-size: 0.7rem">📝</span>
+                    </h3>
                     <div class="task-meta">
                       <span class="time">🔄 Tarefa contínua</span>
                     </div>
@@ -327,88 +426,99 @@
         </div>
       </ng-container>
 
-      <div *ngIf="activeTab !== 'tarefas' && activeTab !== 'calendario' && activeTab !== 'inicio'" class="dev-area">
+      <!-- Telas de Funcionalidades em Desenvolvimento -->
+      <div
+        *ngIf="activeTab !== 'tarefas' && activeTab !== 'calendario' && activeTab !== 'inicio'"
+        class="dev-area"
+      >
         <h1>{{ activeTab | titlecase }}</h1>
         <p>Área em desenvolvimento</p>
       </div>
 
-     <div class="side-panel-overlay" *ngIf="selectedTask" (click)="closeDetails()">
-  <div class="side-panel" (click)="$event.stopPropagation()">
-    <header class="panel-header">
-      <button class="close-btn-side" (click)="closeDetails()">✕</button>
-    </header>
+      <!-- Painel Lateral de Detalhes da Tarefa (Modal Overlay) -->
+      <div class="side-panel-overlay" *ngIf="selectedTask" (click)="closeDetails()">
+        <div class="side-panel" (click)="$event.stopPropagation()">
+          <header class="panel-header">
+            <button class="close-btn-side" (click)="closeDetails()">✕</button>
+          </header>
 
-    <div class="panel-content">
-      <div class="panel-top-row">
-        <textarea class="title-textarea" 
-                  [(ngModel)]="selectedTask.title" 
-                  (blur)="saveTasks()"
-                  placeholder="Título da tarefa" 
-                  rows="1">
-        </textarea>
+          <div class="panel-content">
+            <div class="panel-top-row">
+              <textarea
+                class="title-textarea"
+                [(ngModel)]="selectedTask.title"
+                (blur)="saveTasks()"
+                placeholder="Título da tarefa"
+                rows="1"
+              ></textarea>
 
-        <div class="panel-actions">
-          <span class="status-badge" [class.completed]="selectedTask.completed">
-            {{ selectedTask.completed ? 'Concluída' : 'Pendente' }}
-          </span>
+              <div class="panel-actions">
+                <span class="status-badge" [class.completed]="selectedTask.completed">
+                  {{ selectedTask.completed ? 'Concluída' : 'Pendente' }}
+                </span>
+                <button
+                  class="delete-task-btn"
+                  (click)="deleteTask(selectedTask.id!); closeDetails()"
+                >
+                  🗑 Excluir Tarefa
+                </button>
+              </div>
+            </div>
 
-          <button class="delete-task-btn" (click)="deleteTask(selectedTask.id!); closeDetails()">
-            🗑 Excluir Tarefa
-          </button>
-        </div>
-      </div>
+            <!-- Seção de Prazos -->
+            <div class="deadline-section">
+              <label class="deadline-toggle-container">
+                <input
+                  type="checkbox"
+                  [(ngModel)]="selectedTask.hasDeadline"
+                  (change)="saveTasks()"
+                />
+                <div class="custom-switch"></div>
+                <span class="switch-label-text">Adicionar prazo</span>
+              </label>
 
-      <div class="deadline-section">
-        <label class="deadline-toggle-container">
-          <input type="checkbox" 
-                 [(ngModel)]="selectedTask.hasDeadline" 
-                 (change)="saveTasks()" />
-          <div class="custom-switch"></div>
-          <span class="switch-label-text">Adicionar prazo</span>
-        </label>
+              <div class="deadline-inline-inputs" *ngIf="selectedTask.hasDeadline">
+                <div class="field-box">
+                  <label>DATA</label>
+                  <input type="date" [ngModel]="dueDateValue" (change)="updateTaskDate($event)" />
+                </div>
 
-        <div class="deadline-inline-inputs" *ngIf="selectedTask.hasDeadline">
-          <div class="field-box">
-            <label>DATA</label>
-            <input type="date" 
-                   [ngModel]="dueDateValue" 
-                   (change)="updateTaskDate($event)" />
+                <div class="field-box">
+                  <label>HORA</label>
+                  <input type="time" [ngModel]="dueTimeValue" (change)="updateTaskTime($event)" />
+                </div>
+              </div>
+
+              <div
+                class="current-deadline"
+                *ngIf="selectedTask.hasDeadline && selectedTask.dueDate"
+              >
+                <span class="deadline-label">Prazo definido para: </span>
+                <span class="deadline-date">{{
+                  selectedTask.dueDate | date: 'dd MMM, HH:mm'
+                }}</span>
+              </div>
+            </div>
+
+            <hr class="panel-divider" />
+
+            <!-- Seção de Descrição -->
+            <div class="description-section">
+              <label class="description-label">Descrição</label>
+              <textarea
+                class="description-textarea"
+                [(ngModel)]="selectedTask.description"
+                (blur)="saveTasks()"
+                placeholder="Adicione uma descrição detalhada..."
+              ></textarea>
+            </div>
           </div>
 
-          <div class="field-box">
-            <label>HORA</label>
-            <input type="time" 
-                   [ngModel]="dueTimeValue" 
-                   (change)="updateTaskTime($event)" />
-          </div>
+          <footer class="panel-footer">
+            <p>Criado em {{ selectedTask.createdAt | date: 'dd/MM/yyyy HH:mm' }}</p>
+          </footer>
         </div>
-
-        <div class="current-deadline" *ngIf="selectedTask.hasDeadline && selectedTask.dueDate">
-          <span class="deadline-label">Prazo definido para:</span>
-          <span class="deadline-date">
-            {{ selectedTask.dueDate | date:'dd MMM, HH:mm' }} 
-          </span>
-        </div>
-      </div>
-
-      <hr class="panel-divider">
-
-      <div class="description-section">
-        <label class="description-label">Descrição</label>
-        <textarea class="description-textarea" 
-                  [(ngModel)]="selectedTask.description" 
-                  (blur)="saveTasks()"
-                  placeholder="Adicione uma descrição detalhada...">
-        </textarea>
       </div>
     </div>
-
-    <footer class="panel-footer">
-      <p>Criado em {{ selectedTask.createdAt | date:'dd/MM/yyyy HH:mm' }}</p>
-    </footer>
-  </div>
-</div>
-
-    </div> 
   </main>
 </div>

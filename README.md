@@ -15,15 +15,15 @@ O sistema permite gerenciar tarefas de forma prática, separando atividades pend
 
 ## 🖥️ Interface Principal
 
-><img width="1920" height="1080" alt="Captura de tela 2026-05-18 195503" src="https://github.com/user-attachments/assets/c65c2337-9ce1-489b-963b-1467551a7ecb" />
-><img width="1920" height="1080" alt="Captura de tela 2026-05-18 195508" src="https://github.com/user-attachments/assets/6313c238-4138-4dff-b055-bc5902f29b23" />
-
+> <img width="1920" height="1080" alt="Captura de tela 2026-05-18 195503" src="https://github.com/user-attachments/assets/c65c2337-9ce1-489b-963b-1467551a7ecb" />
+> <img width="1920" height="1080" alt="Captura de tela 2026-05-18 195508" src="https://github.com/user-attachments/assets/6313c238-4138-4dff-b055-bc5902f29b23" />
 
 ---
 
 # ✨ Funcionalidades
 
 ## ✅ Gerenciamento de tarefas
+
 - Criar tarefas
 - Excluir tarefas
 - Marcar tarefas como concluídas
@@ -34,6 +34,7 @@ O sistema permite gerenciar tarefas de forma prática, separando atividades pend
 ---
 
 ## 📅 Organização temporal
+
 - Data automática de criação
 - Ordenação de tarefas
 - Controle visual de status
@@ -41,6 +42,7 @@ O sistema permite gerenciar tarefas de forma prática, separando atividades pend
 ---
 
 ## 🎨 Interface moderna
+
 - Layout responsivo
 - Componentização no Angular
 - Estrutura preparada para escalabilidade
@@ -67,42 +69,42 @@ Este projeto foi desenvolvido com o objetivo de aprofundar conhecimentos em:
 
 ## 🎨 Frontend
 
-| Tecnologia | Descrição |
-|---|---|
-| Angular | Framework frontend |
+| Tecnologia | Descrição           |
+| ---------- | ------------------- |
+| Angular    | Framework frontend  |
 | TypeScript | Linguagem principal |
-| HTML5 | Estrutura |
-| CSS3 | Estilização |
-| RxJS | Programação reativa |
+| HTML5      | Estrutura           |
+| CSS3       | Estilização         |
+| RxJS       | Programação reativa |
 
 ---
 
 ## ⚙️ Backend
 
-| Tecnologia | Descrição |
-|---|---|
-| Java | Linguagem backend |
-| Spring Boot | Framework backend |
-| Spring Data JPA | Persistência |
-| Maven | Gerenciamento de dependências |
+| Tecnologia      | Descrição                     |
+| --------------- | ----------------------------- |
+| Java            | Linguagem backend             |
+| Spring Boot     | Framework backend             |
+| Spring Data JPA | Persistência                  |
+| Maven           | Gerenciamento de dependências |
 
 ---
 
 ## 🗄️ Banco de Dados
 
-| Tecnologia | Descrição |
-|---|---|
+| Tecnologia  | Descrição                                      |
+| ----------- | ---------------------------------------------- |
 | H2 Database | Banco utilizado em ambiente de desenvolvimento |
 
 ---
 
 # ☁️ Deploy
 
-| Camada | Plataforma |
-|---|---|
-| Frontend | Vercel |
-| Backend | Render |
-| Versionamento | GitHub |
+| Camada        | Plataforma |
+| ------------- | ---------- |
+| Frontend      | Vercel     |
+| Backend       | Render     |
+| Versionamento | GitHub     |
 
 ---
 
@@ -161,6 +163,7 @@ Database
 # 🔥 Backend
 
 ## Pré-requisitos
+
 - Java 17+
 - Maven
 
@@ -181,6 +184,7 @@ http://localhost:8080
 # 🎨 Frontend
 
 ## Pré-requisitos
+
 - Node.js
 - Angular CLI
 
@@ -204,12 +208,12 @@ http://localhost:4200
 
 # 📌 Endpoints da API
 
-| Método | Endpoint | Descrição |
-|---|---|---|
-| GET | `/tasks` | Listar tarefas |
-| POST | `/tasks` | Criar tarefa |
-| PUT | `/tasks/{id}` | Atualizar tarefa |
-| DELETE | `/tasks/{id}` | Remover tarefa |
+| Método | Endpoint      | Descrição        |
+| ------ | ------------- | ---------------- |
+| GET    | `/tasks`      | Listar tarefas   |
+| POST   | `/tasks`      | Criar tarefa     |
+| PUT    | `/tasks/{id}` | Atualizar tarefa |
+| DELETE | `/tasks/{id}` | Remover tarefa   |
 
 ---
 
@@ -229,9 +233,9 @@ http://localhost:4200
 
 # 🌐 Aplicação Online
 
-| Serviço | Link |
-|---|---|
-| Frontend | https://projeto-todo-iota.vercel.app/ |
+| Serviço     | Link                                    |
+| ----------- | --------------------------------------- |
+| Frontend    | https://projeto-todo-iota.vercel.app/   |
 | Backend API | https://projeto-todo-yv8n.onrender.com/ |
 
 ---
@@ -239,6 +243,7 @@ http://localhost:4200
 # 🚀 Roadmap / Melhorias Futuras
 
 ## 🔐 Segurança
+
 - [ ] Login com JWT
 - [ ] Controle de usuários
 - [ ] Proteção de rotas
@@ -246,6 +251,7 @@ http://localhost:4200
 ---
 
 ## 📈 Funcionalidades
+
 - [ ] Sistema de categorias
 - [ ] Busca de tarefas
 - [ ] Filtros avançados
@@ -256,6 +262,7 @@ http://localhost:4200
 ---
 
 ## 🎨 Interface
+
 - [x] Dark Mode
 - [ ] Dashboard com estatísticas
 - [ ] Toast notifications
@@ -263,6 +270,7 @@ http://localhost:4200
 ---
 
 ## ☁️ Deploy
+
 - [x] Deploy Backend no Render
 - [x] Deploy Frontend no Vercel
 - [ ] Banco de dados em produção
@@ -291,9 +299,11 @@ Desenvolvedor Fullstack em evolução, focado em aplicações modernas utilizand
 # 🔗 Contato
 
 ## GitHub
+
 https://github.com/randon95754
 
 ## Instagram
+
 https://www.instagram.com/randoonnn/
 
 ---

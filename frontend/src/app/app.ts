@@ -6,6 +6,6 @@ import { TaskComponent } from './components/task/task.component';
   standalone: true,
   imports: [TaskComponent],
   templateUrl: './app.html',
-  styleUrl: './app.css'
+  styleUrl: './app.css',
 })
 export class App {}
