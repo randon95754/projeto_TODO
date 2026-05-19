@@ -6,10 +6,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@CrossOrigin(origins = "https://projeto-todo-8sp6nu4q2-todo-nexus-task-list-s-projects.vercel.app")
 @RestController
 @RequestMapping("/tasks")
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins = {"http://localhost:4200", "https://projeto-todo-8sp6nu4q2-todo-nexus-task-list-s-projects.vercel.app"})
 public class TaskController {
 
     private final TaskService service;
