@@ -8,7 +8,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/tasks")
-@CrossOrigin(origins = {"http://localhost:4200", "https://projeto-todo-8sp6nu4q2-todo-nexus-task-list-s-projects.vercel.app"})
+@CrossOrigin(origins = {"http://localhost:4200", "https://projeto-todo-ltt86agx0-todo-nexus-task-list-s-projects.vercel.app/"})
 public class TaskController {
 
     private final TaskService service;
