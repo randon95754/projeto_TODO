@@ -54,12 +54,15 @@
           <p>Gerencie sua rotina com simplicidade e agilidade</p>
         </header>
 
-        <form class="task-form" (ngSubmit)="addTask($event)" >
-          <div class="input-group">
-            <input type="text" [(ngModel)]="newTask" name="newTask" placeholder="O que precisa ser feito?" required />
-            <button type="submit" class="add-btn" (mousedown)="addTask($event)"(click)="$event.stopPropagation()"><span>+</span></button>
-          </div>
-        </form>
+        <form class="task-form" (ngSubmit)="addTask($event)">
+  <div class="input-group">
+    <input type="text" [(ngModel)]="newTask" name="newTask" placeholder="O que precisa ser feito?" required />
+    
+    <button type="submit" class="add-btn">
+      <span>+</span>
+    </button>
+  </div>
+</form>
 
         <div class="board" cdkDropListGroup>
           <section class="column">
