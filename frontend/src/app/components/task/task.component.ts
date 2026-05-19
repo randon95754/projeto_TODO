@@ -1,4 +1,4 @@
-import { Component, OnInit, NgZone, PLATFORM_ID, inject } from '@angular/core';
+import { Component, OnInit, NgZone, PLATFORM_ID, inject, ChangeDetectorRef } from '@angular/core';
 import { TaskService } from '../../services/task.service';
 import { Task } from '../../models/task';
 import { FormsModule } from '@angular/forms';
@@ -26,7 +26,7 @@ registerLocaleData(localePt);
 })
 export class TaskComponent implements OnInit {
   private platformId = inject(PLATFORM_ID);
-  
+  private cdr = inject(ChangeDetectorRef);
   completedToday: number = 0;
   upcomingTasks: number = 0;
   productivity: number = 0;
@@ -323,7 +323,8 @@ addTask(event?: Event): void {
     event.preventDefault();
     event.stopPropagation();
   }
-
+  
+  if (!isPlatformBrowser(this.platformId)) return;
   const title = this.newTask.trim();
   if (!title) return;
 
@@ -373,6 +374,7 @@ addTask(event?: Event): void {
 
         this.dueDateValue = ''; 
       this.dueTimeValue = '23:59';
+      this.cdr.detectChanges();
       });
     },
     error: (err) => {
