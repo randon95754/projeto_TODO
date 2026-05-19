@@ -1,4 +1,4 @@
-import { Component, OnInit, NgZone, PLATFORM_ID, inject } from '@angular/core';
+import { Component, OnInit, NgZone, PLATFORM_ID, inject, ChangeDetectorRef } from '@angular/core';
 import { TaskService } from '../../services/task.service';
 import { Task } from '../../models/task';
 import { FormsModule } from '@angular/forms';
@@ -50,7 +50,8 @@ export class TaskComponent implements OnInit {
 
   constructor(
     private service: TaskService,
-    private ngZone: NgZone
+    private ngZone: NgZone,
+    private cdr: ChangeDetectorRef
   ) {
     this.generateCalendar();
     if (isPlatformBrowser(this.platformId)) {
@@ -373,6 +374,7 @@ addTask(event?: Event): void {
 
         this.dueDateValue = ''; 
       this.dueTimeValue = '23:59';
+      this.cdr.detectChanges();
       });
     },
     error: (err) => {
