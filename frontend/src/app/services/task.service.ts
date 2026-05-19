@@ -9,7 +9,7 @@ import { Task } from '../models/task';
 export class TaskService {
 
   // Altere AQUI: Troque o localhost pela URL do seu backend no Render
-  private api = 'https://projeto-todo-yv8n.onrender.com/';
+  private api = 'https://projeto-todo-yv8n.onrender.com/tasks';
 
   constructor(private http: HttpClient) {}
 
