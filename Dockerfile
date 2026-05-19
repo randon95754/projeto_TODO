@@ -6,7 +6,6 @@ COPY backend/src ./src
 RUN mvn clean package -DskipTests
 
 # Estágio 2: Rodar a aplicação
-# Substitua a linha 8 por:
 FROM eclipse-temurin:17-jre-alpine
 WORKDIR /app
 COPY --from=build /app/target/*.jar app.jar

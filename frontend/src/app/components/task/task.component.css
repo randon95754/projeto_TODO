@@ -2,14 +2,39 @@
    SIDEBAR PREMIUM
    ========================================= */
 
-.sidebar {
-  width: 260px;
-  min-width: 260px;
-  height: 100vh;
+.main-content {
+  width: 100%;
 
-  position: fixed;
+  min-width: 0;
+
+  transition: all 0.3s ease;
+
+  overflow-x: hidden;
+
+  padding: 30px;
+}
+ 
+
+.app-layout {
+  display: grid;
+
+  grid-template-columns: 260px 1fr;
+
+  min-height: 100dvh;
+
+  transition:
+    grid-template-columns 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.app-layout.sidebar-collapsed {
+  grid-template-columns: 90px 1fr;
+}
+
+.sidebar {
+  height: 100dvh;
+
+  position: sticky;
   top: 0;
-  left: 0;
 
   display: flex;
   flex-direction: column;
@@ -17,7 +42,11 @@
 
   padding: 22px 16px;
 
-  background: linear-gradient(180deg, rgba(15, 23, 42, 0.96), rgba(2, 6, 23, 0.98));
+  background: linear-gradient(
+    180deg,
+    rgba(15, 23, 42, 0.96),
+    rgba(2, 6, 23, 0.98)
+  );
 
   border-right: 1px solid rgba(255, 255, 255, 0.05);
 
@@ -28,11 +57,7 @@
 
   overflow: hidden;
 
-  transition:
-    width 0.3s ease,
-    min-width 0.3s ease;
-
-  z-index: 999;
+  z-index: 100;
 }
 
 /* =========================================
@@ -663,7 +688,6 @@
   right: 15px; /* Distância da direita */
   margin: 0; /* Remove margens que possam deslocar o elemento */
   background: rgba(100, 116, 139, 0.1);
-  background: rgba(100, 116, 139, 0.1);
   color: #64748b;
   padding: 1px 10px;
   border-radius: 10px;
@@ -715,6 +739,40 @@
   .input-group,
   .deadline-premium-block {
     width: 100%;
+  }
+  /* ADAPTAÇÃO MOBILE */
+  .container {
+    padding: 30px 12px; /* Margens mais suaves em telas compactas */
+  }
+  .header h1 {
+    font-size: 2rem; /* Reduz título principal para não quebrar linha */
+  }
+  .input-group {
+    min-width: 100%;
+  }
+  .deadline-inline-inputs {
+    grid-template-columns: 1fr; /* Quebra inputs de data/hora em lista única */
+  }
+  .task-card {
+    flex-direction: column; /* Organiza conteúdo verticalmente no card mobile */
+    align-items: flex-start;
+    gap: 12px;
+  }
+  .task-info h3 {
+    padding-right: 0; /* Libera espaço antes ocupado pelo posicionamento fixo */
+  }
+  .date-created {
+    position: relative; /* Reposiciona a data de criação dinamicamente */
+    top: 0;
+    right: 0;
+    display: inline-block;
+    margin-bottom: 8px;
+  }
+  .theme-btn {
+    bottom: 20px; /* Recua o botão flutuante para cantos acessíveis */
+    right: 20px;
+    width: 48px;
+    height: 48px;
   }
 }
 
@@ -1006,6 +1064,16 @@
   .day-tasks-section {
     width: 100%;
     flex: none;
+  }
+  /* ADAPTAÇÃO MOBILE */
+  .calendar-card {
+    width: 100%;
+    max-width: 100%;
+    flex: none;
+    padding: 16px; /* Ajusta respiro interno em telas mobile */
+  }
+  .calendar-grid {
+    gap: 6px; /* Encolhe ligeiramente o espaçamento dos dias do calendário */
   }
 }
 
@@ -1500,6 +1568,28 @@
 
   .welcome-section h1 {
     font-size: 1.8rem;
+  }
+  /* ADAPTAÇÃO MOBILE */
+  .panel-header {
+    padding: 16px 20px; /* Reduz recuos do cabeçalho da gaveta lateral */
+  }
+  .panel-content {
+    padding: 0 20px; /* Consolida a área de texto lateral no display menor */
+  }
+  .title-textarea {
+    font-size: 1.8rem; /* Evita estouro visual de fontes grandes no título do painel */
+  }
+  .meta-row {
+    grid-template-columns: 1fr; /* Transforma chaves/valores de metadados em blocos empilhados */
+    gap: 4px;
+  }
+  .panel-actions {
+    width: 100%;
+    justify-content: space-between;
+  }
+  .close-btn-side {
+    width: 44px;
+    height: 44px;
   }
 }
 
