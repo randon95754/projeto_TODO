@@ -1,3 +1,8 @@
+![Angular](https://img.shields.io/badge/Angular-20-red)
+![Spring Boot](https://img.shields.io/badge/SpringBoot-3-green)
+![Java](https://img.shields.io/badge/Java-17-orange)
+![Deploy](https://img.shields.io/badge/Deploy-Online-success)
+
 # 🚀 Nexus Checklist — Sistema de Gerenciamento de Tarefas
 
 Aplicação fullstack desenvolvida com foco em organização de tarefas, produtividade e aprendizado de arquitetura moderna utilizando Angular + Spring Boot.
@@ -87,7 +92,27 @@ Este projeto foi desenvolvido com o objetivo de aprofundar conhecimentos em:
 
 | Tecnologia | Descrição |
 |---|---|
-| H2 Database | Banco em memória para desenvolvimento |
+| H2 Database | Banco utilizado em ambiente de desenvolvimento |
+
+---
+
+# ☁️ Deploy
+
+| Camada | Plataforma |
+|---|---|
+| Frontend | Vercel |
+| Backend | Render |
+| Versionamento | GitHub |
+
+---
+
+## Deploy Frontend
+
+O frontend Angular foi hospedado na Vercel com integração contínua via GitHub.
+
+## Deploy Backend
+
+A API Spring Boot foi hospedada no Render utilizando deploy automático via repositório GitHub.
 
 ---
 
@@ -202,6 +227,15 @@ http://localhost:4200
 
 ---
 
+# 🌐 Aplicação Online
+
+| Serviço | Link |
+|---|---|
+| Frontend | https://projeto-todo-iota.vercel.app/ |
+| Backend API | https://projeto-todo-yv8n.onrender.com/ |
+
+---
+
 # 🚀 Roadmap / Melhorias Futuras
 
 ## 🔐 Segurança
@@ -216,22 +250,21 @@ http://localhost:4200
 - [ ] Busca de tarefas
 - [ ] Filtros avançados
 - [ ] Ordenação dinâmica
-- [ ] Prioridade de tarefas
+- [x] Prioridade de tarefas
 - [ ] Sistema de prazos
 
 ---
 
 ## 🎨 Interface
-- [ ] Dark Mode
-- [ ] Drag and Drop
+- [x] Dark Mode
 - [ ] Dashboard com estatísticas
 - [ ] Toast notifications
 
 ---
 
 ## ☁️ Deploy
-- [ ] Deploy Backend
-- [ ] Deploy Frontend
+- [x] Deploy Backend no Render
+- [x] Deploy Frontend no Vercel
 - [ ] Banco de dados em produção
 
 ---
@@ -260,11 +293,13 @@ Desenvolvedor Fullstack em evolução, focado em aplicações modernas utilizand
 ## GitHub
 https://github.com/randon95754
 
-## LinkedIn
+## Instagram
 https://www.instagram.com/randoonnn/
 
 ---
 
 # ⭐ Considerações
 
-Este projeto faz parte da minha jornada de evolução como desenvolvedor Fullstack, aplicando conceitos modernos de desenvolvimento web, integração de APIs e arquitetura escalável.
+O Nexus Checklist foi desenvolvido com foco em consolidar conhecimentos em desenvolvimento fullstack moderno, arquitetura REST e integração entre aplicações Angular e Spring Boot.
+
+O projeto também serviu como experiência prática em deploy cloud utilizando Vercel e Render, além de organização de código escalável e componentização frontend.
