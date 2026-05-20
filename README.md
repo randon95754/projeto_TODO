@@ -265,8 +265,6 @@ Isso significa que:
 - Durante esse tempo, a API pode parecer indisponível temporariamente
 - Após a inicialização, o sistema volta a responder normalmente
 
-Esse comportamento é esperado devido às restrições da camada gratuita da plataforma de deploy.
-
 ---
 
 # 🚀 Roadmap / Melhorias Futuras
