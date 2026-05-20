@@ -4,6 +4,12 @@
   [class.active]="isMobileSidebarOpen"
   (click)="closeMobileSidebar()"
 ></div>
+<button
+  class="mobile-menu-btn"
+  (click)="toggleSidebar()"
+>
+  ☰
+</button>
   <!-- Barra Lateral (Sidebar) -->
   <aside class="sidebar" [class.collapsed]="isSidebarCollapsed" [class.mobile-open]="isMobileSidebarOpen">
     
