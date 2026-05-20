@@ -240,6 +240,35 @@ http://localhost:4200
 
 ---
 
+# ⚠️ Observações Importantes
+
+## 📱 Responsividade (Mobile)
+
+A aplicação ainda não está totalmente otimizada para dispositivos móveis.
+
+Alguns componentes podem apresentar:
+- Layout desalinhado em telas pequenas
+- Elementos com espaçamento reduzido
+- Experiência visual não totalmente adaptada ao mobile
+
+A responsividade está prevista como melhoria futura no roadmap do projeto.
+
+---
+
+## ⏳ Inicialização do Backend (Render)
+
+O backend está hospedado na plataforma Render (plano gratuito), que possui limitação de *cold start*.
+
+Isso significa que:
+
+- A primeira requisição após um período de inatividade pode levar aproximadamente **30s a 1min**
+- Durante esse tempo, a API pode parecer indisponível temporariamente
+- Após a inicialização, o sistema volta a responder normalmente
+
+Esse comportamento é esperado devido às restrições da camada gratuita da plataforma de deploy.
+
+---
+
 # 🚀 Roadmap / Melhorias Futuras
 
 ## 🔐 Segurança
