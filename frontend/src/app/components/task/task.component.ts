@@ -47,7 +47,7 @@ export class TaskComponent implements OnInit {
   isSidebarCollapsed = false;
   darkMode: boolean = false;
   activeTab: string = 'inicio';
-
+  isMobileSidebarOpen = false;
   // Calendário
   viewDate: Date = new Date();
   selectedDate: Date = new Date();
@@ -694,8 +694,24 @@ export class TaskComponent implements OnInit {
   }
 
   toggleSidebar() {
-    this.isSidebarCollapsed = !this.isSidebarCollapsed;
+
+  // MOBILE
+  if (window.innerWidth <= 768) {
+
+    this.isMobileSidebarOpen =
+      !this.isMobileSidebarOpen;
+
+    return;
   }
+
+  // DESKTOP
+  this.isSidebarCollapsed =
+    !this.isSidebarCollapsed;
+}
+
+closeMobileSidebar() {
+  this.isMobileSidebarOpen = false;
+}
 
   toggleTheme(): void {
     this.darkMode = !this.darkMode;

@@ -1,6 +1,12 @@
 <div class="app-layout" [class.sidebar-collapsed]="isSidebarCollapsed">
+  <div
+  class="mobile-overlay"
+  [class.active]="isMobileSidebarOpen"
+  (click)="closeMobileSidebar()"
+></div>
   <!-- Barra Lateral (Sidebar) -->
-  <aside class="sidebar" [class.collapsed]="isSidebarCollapsed">
+  <aside class="sidebar" [class.collapsed]="isSidebarCollapsed" [class.mobile-open]="isMobileSidebarOpen">
+    
     <div class="sidebar-top">
       <div class="sidebar-logo">
         <h2 *ngIf="!isSidebarCollapsed">MENU</h2>
