@@ -121,7 +121,7 @@ A API Spring Boot foi hospedada no Render utilizando deploy automático via repo
 # 🧱 Arquitetura do Projeto
 
 ```bash
-taskflow/
+projeto_TODO/
 │
 ├── backend/
 │   ├── src/main/
