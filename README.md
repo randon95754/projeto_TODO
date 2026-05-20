@@ -124,18 +124,27 @@ A API Spring Boot foi hospedada no Render utilizando deploy automático via repo
 taskflow/
 │
 ├── backend/
-│   ├── controller/
-│   ├── service/
-│   ├── repository/
-│   ├── model/
-│   └── resources/
+│   ├── src/main/
+|           ├── java/com/example/todo
+|               ├── controller/
+|               ├── model/
+|               ├── repository/
+|               ├──service/
+|               └──TodoApplication.java
+|           ├── resources/    
+│   ├── target/
+│   └── pom.xml
 │
 ├── frontend/
-│   ├── components/
-│   ├── services/
-│   ├── models/
-│   ├── pages/
-│   └── assets/
+│   ├── .angular/
+│   ├── public/
+│   ├── src/
+|       ├── app/
+|           ├── components/
+|           ├── models/
+|           ├── services/
+|       ├── environments/
+│  
 ```
 
 ---
